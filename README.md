@@ -1,2 +1,2 @@
 # C-Chess
-The console chess game
+## The console chess game
