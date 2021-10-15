@@ -135,22 +135,3 @@ void set_blank(piece (*obj)[8][8]) {
     }
   }
 }
-
-void show_board(char color, piece (*obj)[8][8]) {
-  if(color == 'w') {
-    for(int r = 7; r >= 0; r--) {
-      printf("\n%i ", r + 1);
-      for(int c = 0; c < 8; c++) {
-        printf("%c ", (*obj)[r][c].name);
-      }
-    }
-  } else {
-    for(int r = 7; r >= 0; r--) {
-      printf("\n%i ", 8 - r);
-      for(int c = 0; c < 8; c++) {
-        printf("%c ", (*obj)[r][c].name);
-      }
-    }
-  }
-  printf("\n");
-}
