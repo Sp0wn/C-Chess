@@ -1,15 +1,15 @@
 
 CC = clang
-BOARD = set.o
-MENU = ui.o
+GAME = Game/output.o Game/set.o
+MENU = Menu/input.o Menu/ui.o
 
 all: mainapp
 
-mainapp: main.o $(BOARD) $(MENU)
-	$(CC) main.o $(BOARD) $(MENU) -o C-Chess
+mainapp:
+	$(CC) main.o $(GAME) $(MENU) -o C-Chess
 
 main: main.c
 	$(CC) -c -w main.c
 
 clean:
-	rm main.o $(BOARD) $(MENU)
+	rm main.o C-Chess

@@ -13,6 +13,4 @@ void set_queens(char color, piece (*obj)[8][8]);
 void set_kings(char color, piece (*obj)[8][8]);
 void set_blank(piece (*obj)[8][8]);
 
-void show_board(char color, piece (*obj)[8][8]);
-
 #endif

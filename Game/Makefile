@@ -1,11 +1,12 @@
 
 CC = clang
-FILES = set.o
+FILES = output.c set.c
+EXES = output.o set.o
 
 all: mainapp
 
-mainapp: set.c
-	$(CC) -c set.c
+mainapp:
+	$(CC) -c $(FILES)
 
 clean:
-	rm $(FILES)
+	rm $(EXES)
