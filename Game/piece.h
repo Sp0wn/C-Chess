@@ -2,12 +2,10 @@
 #define PIECE_H
 
 struct Piece {
-  char color;
-  char name;
+    char color;
+    char name;
 };
 
 typedef struct Piece piece;
-
-extern const piece reset_p;
 
 #endif

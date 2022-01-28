@@ -1,8 +1,9 @@
 
 ##VAR
 CC = clang
-FILES = set.c move.c
-BINS = set.o move.o
+FLAGS = -lncurses
+FILES = IO.c Board.c
+BINS = IO.o Board.o
 
 all: mainapp
 

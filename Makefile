@@ -1,15 +1,19 @@
 
+##VAR
 CC = clang
-GAME = Game/output.o Game/set.o
-MENU = Menu/input.o Menu/ui.o
+FLAGS = -lncursesw
+UI = UI/IO.o UI/Board.o
+GAME = Game/set.o Game/move.o
+#IA =
+#ONLINE =
 
 all: mainapp
 
 mainapp:
-	$(CC) main.o $(GAME) $(MENU) -o C-Chess
+	$(CC) $(FLAGS) $(UI) $(GAME) main.o -o C-Chess
 
 main: main.c
-	$(CC) -c -w main.c
+	$(CC) $(FLAGS) -c -w main.c
 
 clean:
 	rm main.o C-Chess
