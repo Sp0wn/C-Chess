@@ -1,10 +1,11 @@
 #ifndef IO_H
 #define IO_H
 
-void show_logo();
-int main_menu(char* lang);
-void options_menu(char* lang, char* color, char* piece);
+void show_logo(int* theme);
+int main_menu(char* lang, int* theme);
+void options_menu(char* lang, char* color, char* piece, int* theme);
 char** load_config();
-void clear_config_cache(char** ptr);
+void clear_config_cache(char** ptr_c, int* ptr_t);
+int* load_theme(char* color);
 
 #endif

@@ -16,6 +16,18 @@
 
 #include <ncurses.h>
 
+#define BLUE 4
+#define GREEN 2
+#define RED 1
+
+#define PURPLE 5
+#define YELLOW 11
+#define ORANGE 208
+
+#define WHITE 15
+#define GREY 7
+#define BLACK 16
+
 int main()
 {
     //Declares board array and it's pointer
@@ -30,6 +42,9 @@ int main()
     char** config;
     config = load_config();
 
+    int* theme;
+    theme = load_theme(config[1]);
+
     //Sets locale
     char* locale;
     locale = setlocale(LC_ALL, "");
@@ -40,16 +55,23 @@ int main()
     noecho();
     start_color();
     use_default_colors();
-    init_pair(1, COLOR_BLUE, -1);
-    init_pair(2, COLOR_GREEN, -1);
-    init_pair(3, COLOR_RED, -1);
     curs_set(FALSE);
+
+    init_pair(1, BLUE, -1);
+    init_pair(2, GREEN, -1);
+    init_pair(3, RED, -1);
+    init_pair(4, PURPLE, -1);
+    init_pair(5, YELLOW, -1);
+    init_pair(6, ORANGE, -1);
+    init_pair(7, WHITE, -1);
+    init_pair(8, GREY, -1);
+    init_pair(9, BLACK, -1);
 
     run = 1;
 
     while(run) {
-        show_logo();
-        option = main_menu(config[0]);
+        show_logo(theme);
+        option = main_menu(config[0], theme);
         switch(option) {
             case 0:
                 run = 0;
@@ -66,22 +88,23 @@ int main()
                 break;
 
             case 4:
-                show_logo();
+                show_logo(theme);
                 set_pieces(config[2], b_ptr);
                 show_board(config[2], b_ptr);
                 get_move();
                 break;
 
             case 5:
-                options_menu(config[0], config[1], config[2]);
-                clear_config_cache(config);
+                options_menu(config[0], config[1], config[2], theme);
+                clear_config_cache(config, theme);
                 config = load_config();
+                theme = load_theme(config[1]);
                 break;
         }
     }
 
     endwin();
-    clear_config_cache(config);
+    clear_config_cache(config, theme);
 
     return 0;
 }

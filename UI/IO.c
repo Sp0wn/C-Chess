@@ -10,7 +10,7 @@
 #define ESC 27
 #define ENTER 10
 
-void show_logo()
+void show_logo(int* theme)
 {
     //Function to show the app logo
     //in ASCII art
@@ -35,7 +35,7 @@ void show_logo()
     
     clear();
 
-    attron(COLOR_PAIR(1));
+    attron(COLOR_PAIR(theme[0]));
 
     //Print logo with a little animation
     for(i = 0; i < 6; i++) {
@@ -44,12 +44,12 @@ void show_logo()
         usleep(TIME);
     }
 
-    attroff(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(theme[0]));
 
     refresh();
 }
 
-void options_menu(char* lang, char* color, char* piece)
+void options_menu(char* lang, char* color, char* piece, int* theme)
 {
     //Function to show the options menu
     // after option 5
@@ -124,7 +124,7 @@ void options_menu(char* lang, char* color, char* piece)
     Menu_Variables.allVariables[1] = Menu_Variables.variable2;
     Menu_Variables.allVariables[2] = Menu_Variables.variable3;
 
-    wattron(win, COLOR_PAIR(2));
+    wattron(win, COLOR_PAIR(theme[1]));
     box(win, 0, 0);
 
     option = 1;
@@ -229,7 +229,7 @@ void options_menu(char* lang, char* color, char* piece)
     delwin(win);
 }
 
-int main_menu(char* lang)
+int main_menu(char* lang, int* theme)
 {
     //Function to show the initial menu
     
@@ -277,7 +277,7 @@ int main_menu(char* lang)
     Menu_Options.allOptions[3] = Menu_Options.option4;
     Menu_Options.allOptions[4] = Menu_Options.option5;
 
-    wattron(win, COLOR_PAIR(2));
+    wattron(win, COLOR_PAIR(theme[1]));
     box(win, 0, 0);
 
     option = 1;
@@ -368,14 +368,43 @@ char** load_config()
     return config;
 }
 
-void clear_config_cache(char** ptr)
+int* load_theme(char *color)
+{
+    int* theme;
+    theme = malloc(3 * sizeof(int));
+
+    switch(color[0]) {
+        case '1':
+            theme[0] = 1;
+            theme[1] = 2;
+            theme[2] = 3;
+            break;
+
+        case '2':
+            theme[0] = 4;
+            theme[1] = 5;
+            theme[2] = 6;
+            break;
+
+        case '3':
+            theme[0] = 7;
+            theme[1] = 8;
+            theme[1] = 9;
+            break;
+    }
+
+    return theme;
+}
+
+void clear_config_cache(char** ptr_c, int* ptr_t)
 {
     //Function to deallocate
     //the memory from the old ptr
 
-    free(ptr[0]);
-    free(ptr[1]);
-    free(ptr[2]);
-    free(ptr);
+    free(ptr_c[0]);
+    free(ptr_c[1]);
+    free(ptr_c[2]);
+    free(ptr_c);
+    free(ptr_t);
 }
 
