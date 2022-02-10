@@ -69,8 +69,9 @@ int main()
 
     run = 1;
 
+    show_logo(theme, 1);
+
     while(run) {
-        show_logo(theme);
         option = main_menu(config[0], theme);
         switch(option) {
             case 0:
@@ -88,7 +89,7 @@ int main()
                 break;
 
             case 4:
-                show_logo(theme);
+                show_logo(theme, 0);
                 set_pieces(config[2], b_ptr);
                 show_board(config[2], b_ptr);
                 get_move();
@@ -101,6 +102,7 @@ int main()
                 theme = load_theme(config[1]);
                 break;
         }
+        show_logo(theme, 0);
     }
 
     endwin();

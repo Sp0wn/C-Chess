@@ -1,7 +1,7 @@
 #ifndef IO_H
 #define IO_H
 
-void show_logo(int* theme);
+void show_logo(int* theme, int animation);
 int main_menu(char* lang, int* theme);
 void options_menu(char* lang, char* color, char* piece, int* theme);
 char** load_config();

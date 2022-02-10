@@ -7,10 +7,11 @@
 #include <ncurses.h>
 
 #define TIME 250000
+
 #define ESC 27
 #define ENTER 10
 
-void show_logo(int* theme)
+void show_logo(int* theme, int animation)
 {
     //Function to show the app logo
     //in ASCII art
@@ -40,8 +41,10 @@ void show_logo(int* theme)
     //Print logo with a little animation
     for(i = 0; i < 6; i++) {
         mvprintw(i, x, "%s", lines[i]);
-        refresh();
-        usleep(TIME);
+        if(animation == 1) {
+            refresh();
+            usleep(TIME);
+        }
     }
 
     attroff(COLOR_PAIR(theme[0]));
@@ -87,14 +90,31 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         strcpy(Menu_Options.option1, "[1]: Language = ");
         strcpy(Menu_Options.option2, "[2]: Color = ");
         strcpy(Menu_Options.option3, "[3]: Pieces = ");
+        var1 = 1;
     } else if(strcmp(lang, "es") == 0) {
         strcpy(Menu_Options.option1, "[1]: Idioma = ");
         strcpy(Menu_Options.option2, "[2]: Color = ");
         strcpy(Menu_Options.option3, "[3]: Piezas = ");
+        var1 = 2;
     } else if(strcmp(lang, "de") == 0) {
         strcpy(Menu_Options.option1, "[1]: Sprache = ");
         strcpy(Menu_Options.option2, "[2]: Farbe = ");
         strcpy(Menu_Options.option3, "[3]: Stuecke = ");
+        var1 = 3;
+    }
+
+    if(strcmp(color, "1") == 0) {
+        var2 = 1;
+    } else if(strcmp(color, "2") == 0) {
+        var2 = 2;
+    } else if(strcmp(color, "3") == 0) {
+        var2 = 3;
+    }
+
+    if(strcmp(piece, "W") == 0) {
+        var3 = 1;
+    } else if(strcmp(piece, "B") == 0) {
+        var3 = 2;
     }
 
     //Track the options
@@ -130,10 +150,6 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
     option = 1;
 
     done = 0;
-
-    var1 = 1;
-    var2 = 1;
-    var3 = 1;
 
     while(!(done)) {
         for(i = 1; i < 4; i++) {
@@ -225,7 +241,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         }
     }
 
-    wattroff(win, COLOR_PAIR(2));
+    wattroff(win, COLOR_PAIR(theme[1]));
     delwin(win);
 }
 
@@ -321,7 +337,7 @@ int main_menu(char* lang, int* theme)
         }
     }
 
-    wattroff(win, COLOR_PAIR(2));
+    wattroff(win, COLOR_PAIR(theme[1]));
     delwin(win);
     return option;
 }
