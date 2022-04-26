@@ -3,7 +3,7 @@
 CC = clang
 FLAGS = -lncursesw
 UI = UI/IO.o UI/Board.o
-GAME = Game/set.o Game/move.o
+GAME = Game/set.o Game/rules.o
 #IA =
 #ONLINE =
 

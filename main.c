@@ -1,11 +1,14 @@
+//Interface functions
 #include "UI/IO.h"
 #include "UI/Board.h"
 
+//Game functions
 #include "Game/set.h"
-#include "Game/move.h"
+#include "Game/rules.h"
 
 #include "Game/piece.h"
 
+//Standard libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,8 +17,10 @@
 
 #include <unistd.h>
 
+//Main UI library
 #include <ncurses.h>
 
+//Color codes
 #define BLUE 4
 #define GREEN 2
 #define RED 1
@@ -71,6 +76,7 @@ int main()
 
     show_logo(theme, 1);
 
+    //Main program loop
     while(run) {
         option = main_menu(config[0], theme);
         switch(option) {
@@ -91,8 +97,17 @@ int main()
             case 4:
                 show_logo(theme, 0);
                 set_pieces(config[2], b_ptr);
-                show_board(config[2], b_ptr);
-                get_move();
+                show_board(config[2], b_ptr, NULL);
+                int* a_xy = get_move(NULL);
+                int** moves;
+                int* moves_arr;
+                moves = legal_moves(a_xy, b_ptr);
+                moves_arr = moves[0];
+                endwin();
+                printf("%i, %i\n", moves_arr[0], moves_arr[1]);
+                exit(0);
+                show_board(config[2], b_ptr, moves);
+                sleep(5);
                 break;
 
             case 5:

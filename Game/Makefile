@@ -1,8 +1,8 @@
 
 ##VAR
 CC = clang
-FILES = set.c move.c
-BINS = set.o move.o
+FILES = set.c rules.c
+BINS = set.o rules.o
 
 all: mainapp
 

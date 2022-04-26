@@ -5,12 +5,13 @@
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define UP_BOARD "_______________________________"
 #define DOWN_BOARD "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
 #define SPACE_BOARD "|---|---|---|---|---|---|---|---|"
 
-void show_board(char* color, piece (*obj)[8][8])
+void show_board(char* color, piece (*obj)[8][8], int** moves)
 {
     //Function to show the current state of the board
     int x, y;
@@ -18,7 +19,8 @@ void show_board(char* color, piece (*obj)[8][8])
     WINDOW* win = newwin(18, 36, 7, (x / 2 - 18));
     keypad(win, TRUE);
 
-    int row, column, line;
+    int row, column, line, points;
+    int* moves_arr, n_moves;
 
     y = 1;
 
@@ -33,6 +35,12 @@ void show_board(char* color, piece (*obj)[8][8])
         'h'
     };
 
+    if(moves != NULL) {
+        n_moves = sizeof(moves) / sizeof(*moves[0]);
+    } else {
+        n_moves = 0;
+    }
+
     mvwprintw(win, 0, 4, UP_BOARD);
     if(color[0] == 'W') {
         //Loops for rows
@@ -43,6 +51,17 @@ void show_board(char* color, piece (*obj)[8][8])
             //Prints pieces of each column
             for(column = 0; column < 8; column++) {
                 wprintw(win, "| %c ", (*obj)[row][column].name);
+                if(moves != NULL) {
+                    for(points = 0; points < n_moves; points++) {
+                        moves_arr = moves[points];
+                        if(row == moves_arr[1] && column == moves_arr[0] - 1) {
+                            attron(COLOR_PAIR(3));
+                            wprintw(win, "| ○ ");
+                            attroff(COLOR_PAIR(3));
+                        }
+                    }
+                }
+                //wprintw(win, "| %c ", (*obj)[row][column].name);
             }
             wprintw(win, "|");
 
@@ -83,20 +102,59 @@ void show_board(char* color, piece (*obj)[8][8])
     delwin(win);
 }
 
-void get_move()
+int* get_move(int* old_xy)
 {
+    //Function to get the user move input
+    int x, y;
+    int max_x, min_x;
+    int max_y, min_y;
+
+    int row, column;
+
+    int* xy; 
+    xy = malloc(2 * sizeof(int));
+    free(old_xy);
+
+    getmaxyx(stdscr, y, x);
+    min_x = x / 2 - 14;
+    max_x = x / 2 + 16;
+    min_y = y - (y - 8);
+    max_y = y - (y - 22);
+
     keypad(stdscr, TRUE);
     mousemask(BUTTON1_CLICKED, NULL);
-    int c = getch();
+
+    int ch = getch();
     MEVENT event;
-    switch(c) {
-        case KEY_MOUSE:
-            if(getmouse(&event) == OK) {
-                if(event.bstate & BUTTON1_CLICKED) {
-                    printw("X : %i, Y : %i", event.x, event.y);
-                    refresh();
-                    exit(2);
+    if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED)
+    {
+        if(event.x > max_x ||
+            event.x < min_x ||
+            event.y > max_y ||
+            event.y < min_y) 
+        {
+            return NULL;
+        } else {
+            for(row = 0; row < 8; row++) {
+                for(column = 0; column < 8; column++) {
+                    xy[1] = (event.y - min_y) - (1 * row);
+                    xy[0] = ((event.x - min_x) - 1) / 2 - (1 * column);
+                    if(xy[1] == row && xy[0] == column) {
+                        xy[1] = (xy[1] - 7) * -1;
+                        return xy;
+                    }
                 }
             }
+        }
     }
+    return NULL;
+}
+
+void make_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank)
+{
+    char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
+    (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+
+    (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+    (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
 }
