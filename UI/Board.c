@@ -61,7 +61,6 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
                         }
                     }
                 }
-                //wprintw(win, "| %c ", (*obj)[row][column].name);
             }
             wprintw(win, "|");
 
@@ -78,15 +77,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             mvwprintw(win, 17, 5 + line * 4, "%c", column_label[line]);
         }
     } else {
-        for(row = 7; row >= 0; row--) {
-            mvwprintw(win, y, 0, "%i  ", 8 - row);
+        for(row = 0; row < 8; row++) {
+            mvwprintw(win, y, 0, "%i  ", row + 1);
             y++;
-            for(column = 0; column < 8; column++) {
+            for(column = 7; column >= 0; column--) {
                 wprintw(win, "| %c ", (*obj)[row][column].name);
             }
             wprintw(win, "|");
 
-            if(row == 0) {
+            if(row == 7) {
                 continue;
             }
             mvwprintw(win, y, 3, SPACE_BOARD);
@@ -97,7 +96,6 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             mvwprintw(win, 17, 5 + line * 4, "%c", column_label[7 - line]);
         }
     }
-
     wrefresh(win);
     delwin(win);
 }
