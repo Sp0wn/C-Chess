@@ -98,16 +98,11 @@ int main()
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
                 show_board(config[2], b_ptr, NULL);
-                /*int* a_xy = get_move(NULL);
+                int* a_xy = get_move(NULL, config[2]);
                 int** moves;
-                int* moves_arr;
                 moves = legal_moves(a_xy, b_ptr);
-                moves_arr = moves[0];
-                endwin();
-                printf("%i, %i\n", moves_arr[0], moves_arr[1]);
-                exit(0);
                 show_board(config[2], b_ptr, moves);
-                */sleep(5);
+                sleep(5);
                 break;
 
             case 5:

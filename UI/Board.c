@@ -19,8 +19,8 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
     WINDOW* win = newwin(18, 36, 7, (x / 2 - 18));
     keypad(win, TRUE);
 
-    int row, column, line, points;
-    int* moves_arr, n_moves;
+    int row, column, line, points, n_moves;
+    int* moves_arr;
 
     y = 1;
 
@@ -55,9 +55,10 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
                     for(points = 0; points < n_moves; points++) {
                         moves_arr = moves[points];
                         if(row == moves_arr[1] && column == moves_arr[0] - 1) {
-                            attron(COLOR_PAIR(3));
-                            wprintw(win, "| ○ ");
-                            attroff(COLOR_PAIR(3));
+                            wprintw(win, "| ");
+                            wattron(win, COLOR_PAIR(3));
+                            wprintw(win, "○ ");
+                            wattroff(win, COLOR_PAIR(3));
                         }
                     }
                 }
@@ -82,6 +83,17 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             y++;
             for(column = 7; column >= 0; column--) {
                 wprintw(win, "| %c ", (*obj)[row][column].name);
+                if(moves != NULL) {
+                    for(points = 0; points < n_moves; points++) {
+                        moves_arr = moves[points];
+                        if(row == moves_arr[1] && column == moves_arr[0] + 1) {
+                            wprintw(win, "| ");
+                            wattron(win, COLOR_PAIR(3));
+                            wprintw(win, "○ ");
+                            wattroff(win, COLOR_PAIR(3));
+                        }
+                    }
+                } 
             }
             wprintw(win, "|");
 
@@ -100,7 +112,7 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
     delwin(win);
 }
 
-int* get_move(int* old_xy)
+int* get_move(int* old_xy, char* color)
 {
     //Function to get the user move input
     int x, y;
@@ -133,17 +145,30 @@ int* get_move(int* old_xy)
         {
             return NULL;
         } else {
-            for(row = 0; row < 8; row++) {
-                for(column = 0; column < 8; column++) {
-                    xy[1] = (event.y - min_y) - (1 * row);
-                    xy[0] = ((event.x - min_x) - 1) / 2 - (1 * column);
-                    if(xy[1] == row && xy[0] == column) {
-                        xy[1] = (xy[1] - 7) * -1;
-                        return xy;
+            if(color[0] == 'W') {
+                for(row = 0; row < 8; row++) {
+                    for(column = 0; column < 8; column++) {
+                        xy[1] = (event.y - min_y) - (1 * row);
+                        xy[0] = ((event.x - min_x) - 1) / 2 - (1 * column);
+                        if(xy[1] == row && xy[0] == column) {
+                            xy[1] = (xy[1] - 7) * -1;
+                            return xy;
+                        }
+                    }
+                }
+            } else {
+                for(row = 0; row < 8; row++) {
+                    for(column = 0; column < 8; column++) {
+                        xy[1] = (event.y - min_y) - (1 * row);
+                        xy[0] = ((event.x - min_x) - 1) / 2 - (1 * column);
+                        if(xy[1] == row && xy[0] == column) {
+                            xy[0] = (xy[0] - 7) * -1;
+                            return xy;
+                        }
                     }
                 }
             }
-        }
+       }
     }
     return NULL;
 }
