@@ -1,13 +1,17 @@
+//File guard
 #include "IO.h"
 
+//Libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <ncurses.h>
 
+//Time macro (2.5s)
 #define TIME 250000
 
+//Keyboard codes
 #define ESC 27
 #define ENTER 10
 
@@ -55,8 +59,10 @@ void show_logo(int* theme, int animation)
 void options_menu(char* lang, char* color, char* piece, int* theme)
 {
     //Function to show the options menu
-    // after option 5
+    //after option 5
 
+    //Create the window menu
+    //in the middle
     int x, y;
     getmaxyx(stdscr, y, x);
     WINDOW* win = newwin(7, 56, 7, (x / 2 - 28));
@@ -103,6 +109,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         var1 = 3;
     }
 
+    //Set the variables accordingly to the options
     if(strcmp(color, "1") == 0) {
         var2 = 1;
     } else if(strcmp(color, "2") == 0) {
@@ -111,6 +118,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         var2 = 3;
     }
 
+    //Set the variables accordingly to the options
     if(strcmp(piece, "W") == 0) {
         var3 = 1;
     } else if(strcmp(piece, "B") == 0) {
@@ -151,9 +159,12 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
 
     done = 0;
 
+    //Starts printing the menu 
+    //with a loop
     while(!(done)) {
         for(i = 1; i < 4; i++) {
             if(option == i) {
+                //Highlights current option
                 wattron(win, A_STANDOUT);
                 mvwprintw(win, i, 1, "%s", Menu_Options.allOptions[i - 1]);
                 wprintw(win, "%s", Menu_Variables.allVariables[i - 1]);
@@ -165,6 +176,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         }
         wrefresh(win);
 
+        //Waits for keyboard input
         ch = wgetch(win);
 
         switch(ch) {
@@ -173,6 +185,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
                 done = 1;
                 break;
 
+            //Cycles between options
             case KEY_DOWN:
                 option = (option == 3) ? 1 : option + 1;
                 break;
@@ -187,6 +200,8 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
 
                 FILE* savefile;
                 char config_dir[64];
+
+                //Uses logic to get to the user file
                 strcpy(config_dir, getenv("HOME"));
                 strcat(config_dir, "/.config/C-Chess.config");
                 savefile = fopen(config_dir, "w");
@@ -201,6 +216,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
                 fclose(savefile);
                 break;
 
+            //Cycles between variables
             case KEY_LEFT:
                 switch(option) {
                     case 1:
@@ -250,6 +266,9 @@ int main_menu(char* lang, int* theme)
     //Function to show the initial menu
     
     int x, y;
+
+    //Create the window menu
+    //in the middle 
     getmaxyx(stdscr, y, x);
     WINDOW* win = newwin(7, 56, 7, (x / 2 - 28));
     keypad(win, TRUE);
@@ -300,9 +319,12 @@ int main_menu(char* lang, int* theme)
 
     done = 0;
 
+    //Starts printing the options
+    //with a loop
     while(!(done)) {
         for(i = 1; i < 6; i++) {
             if(option == i) {
+                //Highlights current option
                 wattron(win, A_STANDOUT);
                 mvwprintw(win, i, 1, "%s", Menu_Options.allOptions[i - 1]);
                 wattroff(win, A_STANDOUT);
@@ -312,6 +334,7 @@ int main_menu(char* lang, int* theme)
         }
         wrefresh(win);
 
+        //Waits for keyboard input
         ch = wgetch(win);
 
         switch (ch) {
@@ -321,6 +344,7 @@ int main_menu(char* lang, int* theme)
                 option = 0;
                 break;
 
+            //Cycles between options
             case KEY_DOWN:
                 option = (option == 5) ? 1 : option + 1;
                 break;
@@ -366,10 +390,13 @@ char** load_config()
 
     FILE* configfile;
     char config_dir[64];
+
+    //Finds file with logic
     strcpy(config_dir, getenv("HOME"));
     strcat(config_dir, "/.config/C-Chess.config");
     configfile = fopen(config_dir, "r");
 
+    //Copies content into array
     fgets(config[0], 4, (FILE*)configfile);
     config[0][strcspn(config[0], "\n")] = 0;
 
@@ -386,9 +413,16 @@ char** load_config()
 
 int* load_theme(char *color)
 {
+    //Function to load the
+    //C-chess theme
+
     int* theme;
+
+    //Sets space for pointer of array
     theme = malloc(3 * sizeof(int));
 
+    //Loads different colors depending
+    //the option
     switch(color[0]) {
         case '1':
             theme[0] = 1;
@@ -417,10 +451,15 @@ void clear_config_cache(char** ptr_c, int* ptr_t)
     //Function to deallocate
     //the memory from the old ptr
 
+    //Config pointers
     free(ptr_c[0]);
     free(ptr_c[1]);
     free(ptr_c[2]);
+
+    //Config pointer
     free(ptr_c);
+
+    //Theme pointer
     free(ptr_t);
 }
 

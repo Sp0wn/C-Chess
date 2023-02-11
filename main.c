@@ -62,6 +62,7 @@ int main()
     use_default_colors();
     curs_set(FALSE);
 
+    //Inits color pairs
     init_pair(1, BLUE, -1);
     init_pair(2, GREEN, -1);
     init_pair(3, RED, -1);
@@ -80,6 +81,7 @@ int main()
     while(run) {
         option = main_menu(config[0], theme);
         switch(option) {
+            //Exit
             case 0:
                 run = 0;
                 endwin();
@@ -98,13 +100,10 @@ int main()
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
                 show_board(config[2], b_ptr, NULL);
-                int* a_xy = get_move(NULL, config[2]);
-                int** moves;
-                moves = legal_moves(a_xy, b_ptr);
-                show_board(config[2], b_ptr, moves);
                 sleep(5);
                 break;
 
+            //Options
             case 5:
                 options_menu(config[0], config[1], config[2], theme);
                 clear_config_cache(config, theme);
