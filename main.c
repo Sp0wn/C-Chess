@@ -100,7 +100,7 @@ int main()
             case 4:
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
-                show_board(config[2], b_ptr, NULL);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
                 break;
 
             //Options

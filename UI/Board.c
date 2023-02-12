@@ -5,6 +5,7 @@
 #include "../Game/piece.h"
 
 //Libraries
+#include <curses.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,7 @@
 #define DOWN_BOARD "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
 #define SPACE_BOARD "|---|---|---|---|---|---|---|---|"
 
-void show_board(char* color, piece (*obj)[8][8], int** moves)
+void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, int* theme)
 {
     //Function to show the current state of the board
     int x, y;
@@ -61,17 +62,17 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
                         //is empty
                         if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name == ' ') {
                             wprintw(win, "| ");
-                            wattron(win, COLOR_PAIR(3));
+                            wattron(win, COLOR_PAIR(theme[2]));
                             wprintw(win, "○ ");
-                            wattroff(win, COLOR_PAIR(3));
+                            wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         //Prints the piece highlighted if a move is possible and the 
                         //square is used by another piece
                         } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
                             wprintw(win, "| ");
-                            wattron(win, COLOR_PAIR(3));
+                            wattron(win, COLOR_PAIR(theme[2]));
                             wprintw(win, "%c ", (*obj)[row][column].name);
-                            wattroff(win, COLOR_PAIR(3));
+                            wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         } else {
                             if(points == n_moves) {
@@ -79,6 +80,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
                                 break;
                             }
                         }
+                    }
+                } else if(last_move != NULL) {
+                    if(row == last_move[1] && column == last_move[0]) {
+                        wprintw(win, "| ");
+                        wattron(win, COLOR_PAIR(theme[0]));
+                        wprintw(win, "%c ", (*obj)[row][column].name);
+                        wattroff(win, COLOR_PAIR(theme[0]));
+                    } else {
+                        wprintw(win, "| %c ", (*obj)[row][column].name);
                     }
                 } else {
                     wprintw(win, "| %c ", (*obj)[row][column].name);
@@ -103,20 +113,20 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             mvwprintw(win, y, 0, "%i  ", row + 1);
             y++;
             for(column = 7; column >= 0; column--) {
-                 if(moves != NULL) {
+                if(moves != NULL) {
                     for(points = 1; points <= n_moves; points++) {
                         moves_arr = moves[points - 1];
                         if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name == ' ') {
                             wprintw(win, "| ");
-                            wattron(win, COLOR_PAIR(3));
+                            wattron(win, COLOR_PAIR(theme[2]));
                             wprintw(win, "○ ");
-                            wattroff(win, COLOR_PAIR(3));
+                            wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
                             wprintw(win, "| ");
-                            wattron(win, COLOR_PAIR(3));
+                            wattron(win, COLOR_PAIR(theme[2]));
                             wprintw(win, "%c ", (*obj)[row][column].name);
-                            wattroff(win, COLOR_PAIR(3));
+                            wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         } else {
                             if(points == n_moves) {
@@ -124,6 +134,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
                                 break;
                             }
                         }
+                    }
+                } else if(last_move != NULL) {
+                    if(row == last_move[1] && column == last_move[0]) {
+                        wprintw(win, "| ");
+                        wattron(win, COLOR_PAIR(theme[0]));
+                        wprintw(win, "%c ", (*obj)[row][column].name);
+                        wattroff(win, COLOR_PAIR(theme[0]));
+                    } else {
+                        wprintw(win, "| %c ", (*obj)[row][column].name);
                     }
                 } else {
                     wprintw(win, "| %c ", (*obj)[row][column].name);
