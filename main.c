@@ -9,6 +9,7 @@
 #include "Game/piece.h"
 
 //Standard libraries
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -100,7 +101,6 @@ int main()
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
                 show_board(config[2], b_ptr, NULL);
-                sleep(5);
                 break;
 
             //Options

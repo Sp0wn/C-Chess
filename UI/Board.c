@@ -40,7 +40,7 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
     };
 
     if(moves != NULL) {
-        n_moves = sizeof(moves) / sizeof(*moves[0]);
+        n_moves = (*(moves-1))[0];
     } else {
         n_moves = 0;
     }
@@ -55,14 +55,18 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             //Prints pieces of each column
             for(column = 0; column < 8; column++) {
                 if(moves != NULL) {
-                    for(points = 0; points <= n_moves; points++) {
-                        moves_arr = moves[points];
+                    for(points = 1; points <= n_moves; points++) {
+                        moves_arr = moves[points - 1];
+                        //Prints point highlighted if a move is possible and the square
+                        //is empty
                         if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name == ' ') {
                             wprintw(win, "| ");
                             wattron(win, COLOR_PAIR(3));
                             wprintw(win, "○ ");
                             wattroff(win, COLOR_PAIR(3));
                             break;
+                        //Prints the piece highlighted if a move is possible and the 
+                        //square is used by another piece
                         } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
                             wprintw(win, "| ");
                             wattron(win, COLOR_PAIR(3));
@@ -99,18 +103,31 @@ void show_board(char* color, piece (*obj)[8][8], int** moves)
             mvwprintw(win, y, 0, "%i  ", row + 1);
             y++;
             for(column = 7; column >= 0; column--) {
-                wprintw(win, "| %c ", (*obj)[row][column].name);
-                if(moves != NULL) {
-                    for(points = 0; points < n_moves; points++) {
-                        moves_arr = moves[points];
-                        if(row == moves_arr[1] && column == moves_arr[0] + 1) {
+                 if(moves != NULL) {
+                    for(points = 1; points <= n_moves; points++) {
+                        moves_arr = moves[points - 1];
+                        if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name == ' ') {
                             wprintw(win, "| ");
                             wattron(win, COLOR_PAIR(3));
                             wprintw(win, "○ ");
                             wattroff(win, COLOR_PAIR(3));
+                            break;
+                        } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
+                            wprintw(win, "| ");
+                            wattron(win, COLOR_PAIR(3));
+                            wprintw(win, "%c ", (*obj)[row][column].name);
+                            wattroff(win, COLOR_PAIR(3));
+                            break;
+                        } else {
+                            if(points == n_moves) {
+                                wprintw(win, "| %c ", (*obj)[row][column].name);
+                                break;
+                            }
                         }
                     }
-                } 
+                } else {
+                    wprintw(win, "| %c ", (*obj)[row][column].name);
+                }
             }
             wprintw(win, "|");
 
