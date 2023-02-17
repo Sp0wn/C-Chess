@@ -83,6 +83,38 @@ int bishop_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
     }
 }
 
+int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
+{
+    int diff, real_diff;
+    //Rook can't move to the same square of a friendly piece
+    if((*obj)[move_xy[1]][move_xy[0]].name != ' ' && (*obj)[move_xy[1]][move_xy[0]].color == p_color) {
+        return 0;
+    } else {
+        //Rook can move horizontally
+        if(move_xy[0] != origin_xy[0] && move_xy[1] == origin_xy[1]) {
+            //Trace the line and search for any piece in the middle
+            for(diff = abs(origin_xy[0] - move_xy[0]); diff > 1; diff--) {
+                real_diff = (diff - 1) * ((move_xy[0] - origin_xy[0]) / abs(move_xy[0] - origin_xy[0]));
+                if((*obj)[move_xy[1]][move_xy[0] - real_diff].name != ' ') {
+                    return 0;
+                }
+            }
+            return 1;
+        //Rook can move vertically
+        } else if(move_xy[1] != origin_xy[1] && move_xy[0] == origin_xy[0]) {
+            for(diff = abs(origin_xy[1] - move_xy[1]); diff > 1; diff--) {
+                real_diff = (diff - 1) * ((move_xy[1] - origin_xy[1]) / abs(move_xy[1] - origin_xy[1]));
+                if((*obj)[move_xy[1] - real_diff][move_xy[0]].name != ' ') {
+                    return 0;
+                }
+            }
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}   
+
 int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
 {
     int row, column, n_moves, legal;
@@ -107,6 +139,8 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
                 legal = knight_move(origin_xy, move_xy, p_color, obj);
             } else if(symbol == 'B' || symbol == 'b') {
                 legal = bishop_move(origin_xy, move_xy, p_color, obj);
+            } else if(symbol == 'R' || symbol == 'r') {
+                legal = rook_move(origin_xy, move_xy, p_color, obj);
             }
 
             if (legal == 1) {
