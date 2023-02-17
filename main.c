@@ -9,6 +9,7 @@
 #include "Game/piece.h"
 
 //Standard libraries
+#include <curses.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,6 +102,13 @@ int main()
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
                 show_board(config[2], b_ptr, NULL, NULL, theme);
+                int* c = get_move(NULL, config[2]);
+                int* d = get_move(NULL, config[2]);
+                make_move(d, c, b_ptr, reset_p);
+                int* a = get_move(NULL, config[2]);
+                int ** b = legal_moves(a, b_ptr, (*b_ptr)[a[1]][a[0]].color);
+                show_board(config[2], b_ptr, b, NULL, theme);
+                sleep(5);
                 break;
 
             //Options
