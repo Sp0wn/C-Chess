@@ -115,9 +115,120 @@ int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
     }
 }   
 
+int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
+{
+    int row, column, diff, real_diff, trace_x, trace_y, direction;
+    int x_diff, y_diff, direction_x, direction_y;
+    int king_xy[2];
+
+    //Searchs for the king position
+    for(row = 0; row < 8; row++) {
+        for(column = 0; column < 8; column++) {
+            if(((*obj)[row][column].name == 'K' || (*obj)[row][column].name == 'k') && (*obj)[row][column].color ==  p_color) {
+                king_xy[1] = row;
+                king_xy[0] = column;
+            }
+        }
+    }
+
+    switch(line) {
+        case 'h':
+            //Piece can't be pinned if not in the same row
+            if(king_xy[1] != origin_xy[1]) {
+                return 0;
+            }
+            //Trace if any piece in between the king and the origin
+            for(diff = abs(origin_xy[0] - king_xy[0]); diff > 1; diff--) {
+                real_diff = (diff - 1) * ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
+                if((*obj)[origin_xy[1]][origin_xy[0] - real_diff].name != ' ') {
+                    return 0;
+                }
+            }
+            //Direction relative to the king
+            direction = ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
+            //Trace if any piece in the opposite side of the piece
+            for(trace_x = origin_xy[0] - direction; trace_x >= 0 && trace_x <= 7; trace_x = trace_x - direction) {
+                //If another friendly piece is in between, the piece can't get pinned
+                if((*obj)[origin_xy[1]][trace_x].name != ' ' && (*obj)[origin_xy[1]][trace_x].color == p_color) {
+                    return 0;
+                //If the piece is enemy check whether it can attack 
+                } else if((*obj)[origin_xy[1]][trace_x].name != ' ') {
+                    if((*obj)[origin_xy[1]][trace_x].name == 'R' || (*obj)[origin_xy[1]][trace_x].name == 'r' ) {
+                        return 1;
+                    } else if((*obj)[origin_xy[1]][trace_x].name == 'Q' || (*obj)[origin_xy[1]][trace_x].name == 'q') {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            }
+            break;
+        case 'v':
+            //Piece can't be pinned if not in the same column
+            if(king_xy[0] != origin_xy[0]) {
+                return 0;
+            }
+            for(diff = abs(origin_xy[1] - king_xy[1]); diff > 1; diff--) {
+                real_diff = (diff - 1) * ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
+                if((*obj)[origin_xy[1] - real_diff][origin_xy[0]].name != ' ') {
+                    return 0;
+                }
+            }
+            direction = ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
+            for(trace_y = origin_xy[1] - direction; trace_y >= 0 && trace_y <= 7; trace_y = trace_y - direction) {
+                if((*obj)[trace_y][origin_xy[0]].name != ' ' && (*obj)[trace_y][origin_xy[0]].color == p_color) {
+                    return 0;
+                } else if((*obj)[trace_y][origin_xy[0]].name != ' ') {
+                    if((*obj)[trace_y][origin_xy[0]].name == 'R' || (*obj)[trace_y][origin_xy[0]].name == 'r' ) {
+                        return 1;
+                    } else if((*obj)[trace_y][origin_xy[0]].name == 'Q' || (*obj)[trace_y][origin_xy[0]].name == 'q') {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            }
+            break;
+        case 'd':
+            //Piece can't be pinned if not in the same diagonal
+            if(abs(king_xy[0] - origin_xy[0]) != abs(king_xy[1] - origin_xy[1])) {
+                return 0;
+            }
+            for(diff = abs(origin_xy[0] - king_xy[0]); diff > 1; diff--) {
+                x_diff = (diff - 1) * ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
+                y_diff = (diff - 1) * ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
+                if((*obj)[origin_xy[1] - y_diff][origin_xy[0] - x_diff].name != ' ') {
+                    return 0;
+                }
+            }
+            direction_x = ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
+            direction_y = ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
+            trace_x = origin_xy[0] - direction_x;
+            trace_y = origin_xy[1] - direction_y;
+            while((trace_x >= 0 && trace_x <= 7) && (trace_y >= 0 && trace_y <= 7)) {
+                if((*obj)[trace_y][trace_x].name != ' ' && (*obj)[trace_y][trace_x].color == p_color) {
+                    return 0;
+                } else if((*obj)[trace_y][trace_x].name != ' ' ) {
+                    if((*obj)[trace_y][trace_x].name == 'B' || (*obj)[trace_y][trace_x].name == 'b' ) {
+                        return 1;
+                    } else if((*obj)[trace_y][trace_x].name == 'Q' || (*obj)[trace_y][trace_x].name == 'q' ) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+                trace_x = trace_x - direction_x;
+                trace_y = trace_y - direction_y;
+            }
+            break;
+    }
+    return 0;
+}
+
 int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
 {
     int row, column, n_moves, legal;
+    int h_pinned, v_pinned, d_pinned;
     int* move;
     int** moves;
     int move_xy[2];
@@ -141,6 +252,21 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
                 legal = bishop_move(origin_xy, move_xy, p_color, obj);
             } else if(symbol == 'R' || symbol == 'r') {
                 legal = rook_move(origin_xy, move_xy, p_color, obj);
+            } else if(symbol == 'Q' || symbol == 'q') {
+                legal = (bishop_move(origin_xy, move_xy, p_color, obj) || rook_move(origin_xy, move_xy, p_color, obj));
+            }
+
+            //Checks if any the piece is pinned in any axis
+            h_pinned = piece_pinned(origin_xy, 'h', p_color, obj);
+            v_pinned = piece_pinned(origin_xy, 'v', p_color, obj);
+            d_pinned = piece_pinned(origin_xy, 'd', p_color, obj);
+
+            if(h_pinned && move_xy[1] != origin_xy[1]) {
+                legal = 0;
+            } else if(v_pinned && move_xy[0] != origin_xy[0]) {
+                legal = 0;
+            } else if(d_pinned && (move_xy[0] - origin_xy[0] != move_xy[1] - origin_xy[1])) {
+                legal = 0;
             }
 
             if (legal == 1) {

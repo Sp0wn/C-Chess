@@ -105,6 +105,13 @@ int main()
                 int* c = get_move(NULL, config[2]);
                 int* d = get_move(NULL, config[2]);
                 make_move(d, c, b_ptr, reset_p);
+                int* c2 = get_move(NULL, config[2]);
+                int* d2 = get_move(NULL, config[2]);
+                make_move(d2, c2, b_ptr, reset_p);
+                int* c3 = get_move(NULL, config[2]);
+                int* d3 = get_move(NULL, config[2]);
+                make_move(d3, c3, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
                 int* a = get_move(NULL, config[2]);
                 int ** b = legal_moves(a, b_ptr, (*b_ptr)[a[1]][a[0]].color);
                 show_board(config[2], b_ptr, b, NULL, theme);
