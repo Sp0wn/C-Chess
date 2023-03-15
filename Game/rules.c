@@ -2,6 +2,7 @@
 
 #include "../Game/piece.h"
 
+#include <curses.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +17,7 @@ int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8])
         //Pawn can capture pieces in the next squares in diagonal
         if((abs(move_xy[0] - origin_xy[0]) == 1 && abs(move_xy[1] - origin_xy[1]) == 1) && (*obj)[move_xy[1]][move_xy[0]].name != ' ') {
             return 1;
-        //Pawn can move between columns or move more than 2 squares
+        //Pawn can't move between columns or move more than 2 squares
         } else if(origin_xy[0] != move_xy[0] || abs(move_xy[1] - origin_xy[1]) > 2) {
             return 0;
         } else {
@@ -113,7 +114,30 @@ int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
             return 0;
         }
     }
-}   
+}
+
+int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
+{
+    int pawn_left, pawn_right;
+    int knights_square[8];
+    //King can't move to the same square of a friendly piece
+    if((*obj)[move_xy[1]][move_xy[0]].name != ' ' && (*obj)[move_xy[1]][move_xy[0]].color == p_color) {
+        return 0;    
+    } else {
+        //King can only move in a range of one square
+        if(abs(move_xy[0] - origin_xy[0]) > 1 || abs(move_xy[1] - origin_xy[1]) > 1) {
+            return 0;
+        } else {
+            //If the square is threatened can't move
+            if(square_attacked(move_xy, p_color, obj)) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+    }
+}
+
 
 int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
 {
@@ -121,6 +145,10 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
     int x_diff, y_diff, direction_x, direction_y;
     int king_xy[2];
 
+    //If piece is the king then it can't be pinned
+    if((*obj)[origin_xy[1]][origin_xy[0]].name == 'K' || (*obj)[origin_xy[1]][origin_xy[0]].name == 'k') {
+        return 0;
+    }
     //Searchs for the king position
     for(row = 0; row < 8; row++) {
         for(column = 0; column < 8; column++) {
@@ -130,7 +158,6 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
             }
         }
     }
-
     switch(line) {
         case 'h':
             //Piece can't be pinned if not in the same row
@@ -225,6 +252,54 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
     return 0;
 }
 
+int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
+{
+    int pawn_left, pawn_right;
+    int row, column;
+    int knight_attack, rook_attack, bishop_attack, queen_attack;
+    int move_xy[2];
+    char enemy_color, knight_symbol, bishop_symbol;
+    char rook_symbol, queen_symbol, king_symbol;
+    //Check if attacked by pawn
+    if(p_color == 'w') {
+        pawn_left = (*obj)[origin_xy[1] + 1][origin_xy[0] - 1].name == 'p';
+        pawn_right = (*obj)[origin_xy[1] + 1][origin_xy[0] + 1].name == 'p';
+        if(pawn_left || pawn_right) {
+            return 1;
+        }
+    } else {
+        pawn_left = (*obj)[origin_xy[1] - 1][origin_xy[0] - 1].name == 'P';
+        pawn_right = (*obj)[origin_xy[1] - 1][origin_xy[0] + 1].name == 'P';
+        if(pawn_left || pawn_right) {
+            return 1;
+        }
+    }
+    //Sets the enemy piece depending on the color
+    enemy_color = (p_color == 'w') ? 'b' : 'w';
+    knight_symbol = (p_color == 'w') ? 'n' : 'N';
+    bishop_symbol = (p_color == 'w') ? 'b' : 'B';
+    rook_symbol = (p_color == 'w') ? 'r' : 'R';
+    queen_symbol = (p_color == 'w') ? 'q' : 'Q';
+    king_symbol = (p_color == 'w') ? 'k' : 'K';
+    for(row = 0; row < 8; row++) {
+        for(column = 0; column < 8; column++) {
+            move_xy[1] = row;
+            move_xy[0] = column;
+            knight_attack = knight_move(move_xy, origin_xy, enemy_color, obj) && (*obj)[move_xy[1]][move_xy[0]].name == knight_symbol;
+            bishop_attack = bishop_move(move_xy, origin_xy, enemy_color, obj) && (*obj)[move_xy[1]][move_xy[0]].name == bishop_symbol;
+            rook_attack = rook_move(move_xy, origin_xy, enemy_color, obj) && (*obj)[move_xy[1]][move_xy[0]].name == rook_symbol;
+            queen_attack = (bishop_move(move_xy, origin_xy, enemy_color, obj) || rook_move(move_xy, origin_xy, enemy_color, obj)) && (*obj)[move_xy[1]][move_xy[0]].name == queen_symbol;
+            if(knight_attack || bishop_attack || rook_attack || queen_attack) {
+                return 1;
+            }
+            if(!(abs(move_xy[0] - origin_xy[0]) > 1 || abs(move_xy[1] - origin_xy[1]) > 1) && (*obj)[move_xy[1]][move_xy[0]].name == king_symbol) {
+                return 1;
+            }
+        }   
+    }
+    return 0;
+}
+
 int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
 {
     int row, column, n_moves, legal;
@@ -254,6 +329,8 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
                 legal = rook_move(origin_xy, move_xy, p_color, obj);
             } else if(symbol == 'Q' || symbol == 'q') {
                 legal = (bishop_move(origin_xy, move_xy, p_color, obj) || rook_move(origin_xy, move_xy, p_color, obj));
+            } else if(symbol == 'K' || symbol == 'k') {
+                legal = king_move(origin_xy, move_xy, p_color, obj);
             }
 
             //Checks if any the piece is pinned in any axis
