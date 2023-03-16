@@ -102,27 +102,42 @@ int main()
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
                 show_board(config[2], b_ptr, NULL, NULL, theme);
-                /*int* c = get_move(NULL, config[2]);
-                int **b1 = legal_moves(c, b_ptr, (*b_ptr)[c[1]][c[0]].color);
+
+                int* c = get_move(NULL, config[2]);
+                int **b1 = legal_moves(c, b_ptr, (*b_ptr)[c[1]][c[0]].color, NULL);
                 show_board(config[2], b_ptr, b1, NULL, theme);
                 int* d = get_move(NULL, config[2]);
                 make_move(d, c, b1, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
+
                 int* c2 = get_move(NULL, config[2]);
+                int **b2 = legal_moves(c2, b_ptr, (*b_ptr)[c2[1]][c2[0]].color, d);
+                show_board(config[2], b_ptr, b2, NULL, theme);
                 int* d2 = get_move(NULL, config[2]);
-                int **b2 = legal_moves(c2, b_ptr, (*b_ptr)[c2[1]][c2[0]].color);
                 make_move(d2, c2, b2, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
+
                 int* c3 = get_move(NULL, config[2]);
+                int **b3 = legal_moves(c3, b_ptr, (*b_ptr)[c3[1]][c3[0]].color, d2);
+                show_board(config[2], b_ptr, b3, NULL, theme);
                 int* d3 = get_move(NULL, config[2]);
-                make_move(d3, c3, b_ptr, reset_p);*/
-                //show_board(config[2], b_ptr, NULL, NULL, theme);
-                //int* a = get_move(NULL, config[2]);
-                //int **b = legal_moves(a, b_ptr, (*b_ptr)[a[1]][a[0]].color);
-                //show_board(config[2], b_ptr, b, NULL, theme);
-                int a = show_promotion(theme, b_ptr, 'b', 2);
-                endwin();
-                printf("%i\n", a);
-                exit(0);
-                //sleep(5);
+                make_move(d3, c3, b3, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
+
+                int* c4 = get_move(NULL, config[2]);
+                int **b4 = legal_moves(c4, b_ptr, (*b_ptr)[c4[1]][c4[0]].color, d3);
+                show_board(config[2], b_ptr, b4, NULL, theme);
+                int* d4 = get_move(NULL, config[2]);
+                make_move(d4, c4, b4, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
+
+                int* a = get_move(NULL, config[2]);
+                int **b = legal_moves(a, b_ptr, (*b_ptr)[a[1]][a[0]].color, d4);
+                show_board(config[2], b_ptr, b, NULL, theme);
+                int* d5 = get_move(NULL, config[2]);
+                make_move(d5, a, b, b_ptr, reset_p);
+                show_board(config[2], b_ptr, NULL, NULL, theme);
+                sleep(5);
                 break;
 
             //Options

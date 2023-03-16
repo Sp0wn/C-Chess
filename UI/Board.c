@@ -312,6 +312,11 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     while(n_moves > 0) {
         legal_array = legal_moves[n_moves - 1];
         if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
+            //Resets square of en passant
+            if((symbol == 'P' || symbol == 'p') && (*obj)[move_xy[1]][move_xy[0]].name == ' ') {
+                (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
+                (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
+            }
             //Moves the struct
             (*obj)[move_xy[1]][move_xy[0]].name = symbol;
             (*obj)[move_xy[1]][move_xy[0]].color = color;
