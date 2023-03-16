@@ -293,10 +293,11 @@ int* get_move(int* old_xy, char* color)
     return NULL;
 }
 
-int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank)
+int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank, int* castle)
 {
     int n_moves;
     int* legal_array;
+    char rook_symbol;
 
     //Gets array size
     if (legal_moves != NULL) {
@@ -309,6 +310,8 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
     char color = (*obj)[origin_xy[1]][origin_xy[0]].color;
 
+    rook_symbol = (color == 'w') ? 'R' : 'r';
+
     while(n_moves > 0) {
         legal_array = legal_moves[n_moves - 1];
         if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
@@ -316,6 +319,32 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
             if((symbol == 'P' || symbol == 'p') && (*obj)[move_xy[1]][move_xy[0]].name == ' ') {
                 (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
                 (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
+            }
+            //Sets castle privilege
+            if(symbol == 'K' || symbol == 'k') {
+                castle[0] = 0;
+                castle[1] = 0;
+                //Short castle
+                if(move_xy[0] - origin_xy[0] == 2) {
+                    //Resets rook square and moves rook
+                    (*obj)[move_xy[1]][7] = blank;
+                    (*obj)[move_xy[1]][7].name = ' ';
+                    (*obj)[move_xy[1]][5].name = rook_symbol;
+                    (*obj)[move_xy[1]][5].color = color;
+                //Long castle
+                } else if(move_xy[0] - origin_xy[0] == -2) {
+                    (*obj)[move_xy[1]][0] = blank;
+                    (*obj)[move_xy[1]][0].name = ' ';
+                    (*obj)[move_xy[1]][3].name = rook_symbol;
+                    (*obj)[move_xy[1]][3].color = color;
+                }
+            }
+            if(symbol == 'R' || symbol == 'r') {
+                if(origin_xy[0] == 0) {
+                    castle[0] = 0;
+                } else if(origin_xy[0] == 7) {
+                    castle[1] = 0;
+                }
             }
             //Moves the struct
             (*obj)[move_xy[1]][move_xy[0]].name = symbol;

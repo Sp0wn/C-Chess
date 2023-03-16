@@ -1,6 +1,8 @@
--Add special moves (Promotion, Castling, En passant)
 -Add check visual effect
+-Add legal moves for when the king is in check
 -Add memory deletions for legal moves function
--Add player vs player local game
+-Solve crash when clicking spaces between the squares
+-Add unicode pieces
+-Add player vs player local game (Time and moves in bottom panel)
 -Add analysis board (Load pgn/fen, edit board, starting positon) with engine lines, openings
 database, and evaluation

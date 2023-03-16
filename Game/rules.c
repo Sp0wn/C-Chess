@@ -143,16 +143,51 @@ int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
     }
 }
 
-int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
+int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], int* castle)
 {
-    int pawn_left, pawn_right;
+    int pawn_left, pawn_right, direction, trace;
+    int move_trace[2];
     int knights_square[8];
     //King can't move to the same square of a friendly piece
     if((*obj)[move_xy[1]][move_xy[0]].name != ' ' && (*obj)[move_xy[1]][move_xy[0]].color == p_color) {
         return 0;    
     } else {
         //King can only move in a range of one square
-        if(abs(move_xy[0] - origin_xy[0]) > 1 || abs(move_xy[1] - origin_xy[1]) > 1) {
+        if((move_xy[1] == origin_xy[1]) && (abs(move_xy[0] - origin_xy[0]) == 2)) {
+            //King can't castle if in check
+            if(square_attacked(origin_xy, p_color, obj)) {
+                return 0;
+            }
+            direction = (move_xy[0] - origin_xy[0]) / 2;
+            move_trace[1] = origin_xy[1];
+            //Short castling
+            if(direction == 1) {
+                if(castle[1] == 0) {
+                    return 0;
+                } else {
+                    for(trace = 1; trace < 3; trace++) {
+                        move_trace[0] = origin_xy[0] + trace;
+                        if((*obj)[origin_xy[1]][origin_xy[0] + trace].name != ' ' || square_attacked(move_trace, p_color, obj)) {
+                            return 0; 
+                        }
+                    }
+                    return 1;
+                }
+            //Long castling
+            } else {
+                if(castle[0] == 0) {
+                    return 0;
+                } else {
+                     for(trace = 1; trace < 4; trace++) {
+                        move_trace[0] = origin_xy[0] - trace;
+                        if((*obj)[origin_xy[1]][origin_xy[0] - trace].name != ' ' || square_attacked(move_trace, p_color, obj)) {
+                            return 0; 
+                        }
+                    }
+                    return 1;
+                }
+            }
+        } else if(abs(move_xy[0] - origin_xy[0]) > 1 || abs(move_xy[1] - origin_xy[1]) > 1) {
             return 0;
         } else {
             //If the square is threatened can't move
@@ -327,7 +362,7 @@ int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
     return 0;
 }
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_move)
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_move, int* castle)
 {
     int row, column, n_moves, legal;
     int h_pinned, v_pinned, d_pinned;
@@ -357,7 +392,7 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_mo
             } else if(symbol == 'Q' || symbol == 'q') {
                 legal = (bishop_move(origin_xy, move_xy, p_color, obj) || rook_move(origin_xy, move_xy, p_color, obj));
             } else if(symbol == 'K' || symbol == 'k') {
-                legal = king_move(origin_xy, move_xy, p_color, obj);
+                legal = king_move(origin_xy, move_xy, p_color, obj, castle);
             }
 
             //Checks if any the piece is pinned in any axis
