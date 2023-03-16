@@ -1,5 +1,6 @@
 -Add special moves (Promotion, Castling, En passant)
 -Add check visual effect
+-Add memory deletions for legal moves function
 -Add player vs player local game
 -Add analysis board (Load pgn/fen, edit board, starting positon) with engine lines, openings
 database, and evaluation

@@ -360,9 +360,12 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color)
     }
 
     //Allocates array size in the first address
-    int* size = malloc(1 * sizeof(int));
-    size[0] = n_moves;
-    moves[0] = size;
-
-    return (moves+1);
+    if(n_moves > 0) {
+        int* size = malloc(1 * sizeof(int));
+        size[0] = n_moves;
+        moves[0] = size;
+        return (moves+1);
+    } else {
+        return NULL;
+    }
 }

@@ -9,6 +9,7 @@
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 //Board codes
@@ -165,6 +166,59 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
     delwin(win);
 }
 
+int show_promotion(int *theme, piece (*obj)[8][8], char p_color, int column)
+{
+    int x, y;
+    char knight_symbol, bishop_symbol, rook_symbol, queen_symbol;
+    getmaxyx(stdscr, y, x);   
+
+    knight_symbol = (p_color == 'w') ? 'N' : 'n';
+    bishop_symbol = (p_color == 'w') ? 'B' : 'b';
+    rook_symbol = (p_color == 'w') ? 'R' : 'r';
+    queen_symbol = (p_color == 'w') ? 'Q' : 'q';
+
+    if(p_color == 'w') {
+        WINDOW* win = newwin(7, 3, 8, (x / 2 - 18) + 4 + (column * 4));
+        keypad(win, TRUE);
+        mousemask(BUTTON1_CLICKED, NULL);
+        wattron(win, COLOR_PAIR(theme[1]));
+
+        mvwprintw(win, 0, 0, " %c", queen_symbol);
+        mvwprintw(win, 2, 0, " %c", rook_symbol);
+        mvwprintw(win, 4, 0, " %c", bishop_symbol);
+        mvwprintw(win, 6, 0, " %c", knight_symbol);
+        wrefresh(win);
+
+        int ch = wgetch(win);
+        MEVENT event;
+        if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+            int option = (event.y / 2) - 3;
+            return option;
+        }
+        delwin(win);
+    } else {
+        WINDOW* win = newwin(7, 3, 16, (x / 2 - 18) + 4 + (column * 4));
+        keypad(win, TRUE);
+        mousemask(BUTTON1_CLICKED, NULL);
+        wattron(win, COLOR_PAIR(theme[1]));
+
+        mvwprintw(win, 0, 0, " %c", knight_symbol);
+        mvwprintw(win, 2, 0, " %c", bishop_symbol);
+        mvwprintw(win, 4, 0, " %c", rook_symbol);
+        mvwprintw(win, 6, 0, " %c", queen_symbol);
+        wrefresh(win);
+
+        int ch = wgetch(win);
+        MEVENT event;
+        if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+            int option = abs((event.y / 2) - 11) + 1;
+            return option;
+        }
+        delwin(win);
+    }
+    return 0;
+}
+
 int* get_move(int* old_xy, char* color)
 {
     //Function to get the user move input
@@ -239,17 +293,62 @@ int* get_move(int* old_xy, char* color)
     return NULL;
 }
 
-void make_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank)
+int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank)
 {
+    int n_moves;
+    int* legal_array;
+
+    //Gets array size
+    if (legal_moves != NULL) {
+        n_moves = (*(legal_moves-1))[0];
+    } else {
+        n_moves = 0;
+    }
+
     //Gets struct variables
     char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
     char color = (*obj)[origin_xy[1]][origin_xy[0]].color;
 
-    //Moves the struct
-    (*obj)[move_xy[1]][move_xy[0]].name = symbol;
-    (*obj)[move_xy[1]][move_xy[0]].color = color;
-
-    //Resets origin square
-    (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-    (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+    while(n_moves > 0) {
+        legal_array = legal_moves[n_moves - 1];
+        if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
+            //Moves the struct
+            (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+            (*obj)[move_xy[1]][move_xy[0]].color = color;
+            //Resets origin square
+            (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+            (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+            return 1;
+        } 
+        n_moves--; 
+    }
+    return 0;
 }
+
+int make_promotion(int option, int *origin_xy, piece (*obj)[8][8], char p_color)
+{
+    char knight_symbol, bishop_symbol, rook_symbol, queen_symbol;
+    knight_symbol = (p_color == 'w') ? 'N' : 'n';
+    bishop_symbol = (p_color == 'w') ? 'B' : 'b';
+    rook_symbol = (p_color == 'w') ? 'R' : 'r';
+    queen_symbol = (p_color == 'w') ? 'Q' : 'q';
+
+    switch(option) {
+        case 1:
+            (*obj)[origin_xy[1]][origin_xy[0]].name = queen_symbol;
+            break;
+        case 2:
+            (*obj)[origin_xy[1]][origin_xy[0]].name = rook_symbol;
+            break;
+        case 3:
+            (*obj)[origin_xy[1]][origin_xy[0]].name = bishop_symbol;
+            break;
+        case 4:
+            (*obj)[origin_xy[1]][origin_xy[0]].name = knight_symbol;
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
