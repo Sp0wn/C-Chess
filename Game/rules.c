@@ -134,7 +134,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
         //King can only move in a range of one square
         if((move_xy[1] == origin_xy[1]) && (abs(move_xy[0] - origin_xy[0]) == 2)) {
             //King can't castle if in check
-            if(square_attacked(origin_xy, p_color, obj)) {
+            if(square_attacked(origin_xy, p_color, obj) != NULL) {
                 return 0;
             }
             direction = (move_xy[0] - origin_xy[0]) / 2;
@@ -146,7 +146,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
                 } else {
                     for(trace = 1; trace < 3; trace++) {
                         move_trace[0] = origin_xy[0] + trace;
-                        if((*obj)[origin_xy[1]][origin_xy[0] + trace].name != ' ' || square_attacked(move_trace, p_color, obj)) {
+                        if((*obj)[origin_xy[1]][origin_xy[0] + trace].name != ' ' || square_attacked(move_trace, p_color, obj) != NULL) {
                             return 0; 
                         }
                     }
@@ -159,7 +159,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
                 } else {
                      for(trace = 1; trace < 4; trace++) {
                         move_trace[0] = origin_xy[0] - trace;
-                        if((*obj)[origin_xy[1]][origin_xy[0] - trace].name != ' ' || square_attacked(move_trace, p_color, obj)) {
+                        if((*obj)[origin_xy[1]][origin_xy[0] - trace].name != ' ' || square_attacked(move_trace, p_color, obj) != NULL) {
                             return 0; 
                         }
                     }
@@ -170,7 +170,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
             return 0;
         } else {
             //If the square is threatened can't move
-            if(square_attacked(move_xy, p_color, obj)) {
+            if(square_attacked(move_xy, p_color, obj) != NULL) {
                 return 0;
             } else {
                 return 1;
@@ -293,7 +293,7 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
     return 0;
 }
 
-int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
+int** square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
 {
     int pawn_left, pawn_right;
     int row, column;
@@ -301,19 +301,53 @@ int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
     int move_xy[2];
     char enemy_color, knight_symbol, bishop_symbol;
     char rook_symbol, queen_symbol, king_symbol;
+    int** attackers;
+    int* attack;
+    int n_attacks;
+    
+    attackers = NULL;
+    n_attacks = 0;
+
     //Check if attacked by pawn
     if(p_color == 'w') {
         pawn_left = (*obj)[origin_xy[1] + 1][origin_xy[0] - 1].name == 'p';
         pawn_right = (*obj)[origin_xy[1] + 1][origin_xy[0] + 1].name == 'p';
-        if(pawn_left || pawn_right) {
-            return 1;
+        if(pawn_left) {
+            attack = malloc(2 * sizeof(int));
+            attack[0] = origin_xy[0] - 1;
+            attack[1] = origin_xy[1] +  1;
+            attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+            attackers[n_attacks + 1] = attack;
+            n_attacks++;
+        }
+        if(pawn_right) {
+            attack = malloc(2 * sizeof(int));
+            attack[0] = origin_xy[0] + 1;
+            attack[1] = origin_xy[1] +  1;
+            attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+            attackers[n_attacks + 1] = attack;
+            n_attacks++;
         }
     } else {
         pawn_left = (*obj)[origin_xy[1] - 1][origin_xy[0] - 1].name == 'P';
         pawn_right = (*obj)[origin_xy[1] - 1][origin_xy[0] + 1].name == 'P';
-        if(pawn_left || pawn_right) {
-            return 1;
+        if(pawn_left) {
+            attack = malloc(2 * sizeof(int));
+            attack[0] = origin_xy[0] - 1;
+            attack[1] = origin_xy[1] -  1;
+            attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+            attackers[n_attacks + 1] = attack;
+            n_attacks++;
         }
+        if(pawn_right) {
+            attack = malloc(2 * sizeof(int));
+            attack[0] = origin_xy[0] + 1;
+            attack[1] = origin_xy[1] -  1;
+            attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+            attackers[n_attacks + 1] = attack;
+            n_attacks++;
+        }
+ 
     }
     //Sets the enemy piece depending on the color
     enemy_color = (p_color == 'w') ? 'b' : 'w';
@@ -331,19 +365,36 @@ int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
             rook_attack = rook_move(move_xy, origin_xy, enemy_color, obj) && (*obj)[move_xy[1]][move_xy[0]].name == rook_symbol;
             queen_attack = (bishop_move(move_xy, origin_xy, enemy_color, obj) || rook_move(move_xy, origin_xy, enemy_color, obj)) && (*obj)[move_xy[1]][move_xy[0]].name == queen_symbol;
             if(knight_attack || bishop_attack || rook_attack || queen_attack) {
-                return 1;
+                attack = malloc(2 * sizeof(int));
+                attack[0] = column;
+                attack[1] = row;
+                attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+                attackers[n_attacks + 1] = attack;
+                n_attacks++;
             }
             if(!(abs(move_xy[0] - origin_xy[0]) > 1 || abs(move_xy[1] - origin_xy[1]) > 1) && (*obj)[move_xy[1]][move_xy[0]].name == king_symbol) {
-                return 1;
+                attack = malloc(2 * sizeof(int));
+                attack[0] = column;
+                attack[1] = row;
+                attackers = realloc(attackers, (n_attacks + 2) * sizeof(int*));
+                attackers[n_attacks + 1] = attack;
+                n_attacks++;
             }
         }   
     }
-    return 0;
+    if(n_attacks > 0) {
+        int* size = malloc(1 * sizeof(int));
+        size[0] = n_attacks;
+        attackers[0] = size;
+        return (attackers+1);
+    } else {
+        return NULL;
+    }
 }
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle)
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle, int* king)
 {
-    int row, column, n_moves, legal;
+    int row, column, n_moves, n_attacks, legal;
     int h_pinned, v_pinned, d_pinned;
     int* move;
     int** moves;
@@ -351,6 +402,12 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
 
     moves = NULL;
     n_moves = 0;
+
+    if(attackers != NULL) {
+        n_attacks = (*(attackers-1))[0];
+    } else {
+        n_attacks = 0;
+    }
 
     char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
     //Search for possibilities around all the board
@@ -385,6 +442,116 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 legal = 0;
             } else if(d_pinned && (move_xy[0] - origin_xy[0] != move_xy[1] - origin_xy[1])) {
                 legal = 0;
+            }
+
+            if(n_attacks > 1 && (symbol != 'K' || symbol != 'k')) {
+                legal = 0;
+            } else if(n_attacks == 1) {
+                int* attack_arr = attackers[0];
+                char attack_symbol = (*obj)[attack_arr[1]][attack_arr[0]].name;
+                if(symbol != 'K' || symbol != 'k') {
+                    if(legal == 1 && (move_xy[0] == attack_arr[0] && move_xy[1] == attack_arr[1])) {
+                        legal = 1;
+                    } else if(legal == 1) {
+                        if(attack_symbol == 'N' || attack_symbol == 'n') {
+                            legal = 0;
+                        } else if(attack_symbol == 'P' || attack_symbol == 'p') {
+                            legal = 0;
+                        } else if(attack_symbol == 'R' || attack_symbol == 'r') {
+                            //Atttack vertically
+                            if(attack_arr[0] == king[0]) {
+                                if(king[1] < attack_arr[1]) {
+                                    if((move_xy[0] == king[0]) && (move_xy[1] > king[1] && move_xy[1] < attack_arr[1])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                } else {
+                                    if((move_xy[0] == king[0]) && (move_xy[1] < king[1] && move_xy[1] > attack_arr[1])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                }
+                            //Atttack horizontally
+                            } else {
+                                if(king[0] < attack_arr[0]) {
+                                    if((move_xy[1] == king[1]) && (move_xy[0] > king[0] && move_xy[0] < attack_arr[0])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                } else {
+                                    if((move_xy[1] == king[1]) && (move_xy[0] < king[0] && move_xy[0] > attack_arr[0])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                }
+                            }
+                        } else if(attack_symbol == 'B' || attack_symbol == 'b') {
+                            if(abs(king[0] - move_xy[0]) == abs(king[1] - move_xy[1])) {
+                                int direction_x_move = (attack_arr[0] - move_xy[0]) / abs(attack_arr[0] - move_xy[0]);
+                                int direction_x_king = (attack_arr[0] - king[0]) / abs(attack_arr[0] - king[0]);
+                                int direction_y_move = (attack_arr[1] - move_xy[1]) / abs(attack_arr[1] - move_xy[1]);
+                                int direction_y_king = (attack_arr[1] - king[1]) / abs(attack_arr[1] - king[1]);
+                                if(direction_x_king == direction_x_move && direction_y_king == direction_y_move) {
+                                    legal = 1;
+                                } else {
+                                    legal = 0;
+                                }
+                            } else {
+                                legal = 0;
+                            }
+                        } else if(attack_symbol == 'Q' || attack_symbol == 'q') {
+                            if(attack_arr[0] == king[0]) {
+                                if(king[1] < attack_arr[1]) {
+                                    if((move_xy[0] == king[0]) && (move_xy[1] > king[1] && move_xy[1] < attack_arr[1])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                } else {
+                                    if((move_xy[0] == king[0]) && (move_xy[1] < king[1] && move_xy[1] > attack_arr[1])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                }
+                            } else if(attack_arr[1] == king[1]) {
+                                if(king[0] < attack_arr[0]) {
+                                    if((move_xy[1] == king[1]) && (move_xy[0] > king[0] && move_xy[0] < attack_arr[0])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                } else {
+                                    if((move_xy[1] == king[1]) && (move_xy[0] < king[0] && move_xy[0] > attack_arr[0])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                }
+                            } else {
+                                if(abs(king[0] - move_xy[0]) == abs(king[1] - move_xy[1])) {
+                                    int direction_x_move = (attack_arr[0] - move_xy[0]) / abs(attack_arr[0] - move_xy[0]);
+                                    int direction_x_king = (attack_arr[0] - king[0]) / abs(attack_arr[0] - king[0]);
+                                    int direction_y_move = (attack_arr[1] - move_xy[1]) / abs(attack_arr[1] - move_xy[1]);
+                                    int direction_y_king = (attack_arr[1] - king[1]) / abs(attack_arr[1] - king[1]);
+                                    if(direction_x_king == direction_x_move && direction_y_king == direction_y_move) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
+                                } else {
+                                    legal = 0;
+                                }
+                            } 
+                        }
+                    } else {
+                        legal = 0;
+                    }
+                }
             }
 
             if (legal == 1) {

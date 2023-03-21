@@ -1,4 +1,3 @@
--Add legal moves for when the king is in check
 -Add memory deletions for legal moves function
 -Solve crash when clicking spaces between the squares
 -Add unicode pieces
