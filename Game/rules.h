@@ -3,7 +3,7 @@
 
 #include "../Game/piece.h"
 
-int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8], int* last_move);
+int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8]);
 int knight_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8]);
 int bishop_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8]);
 int rook_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8]);
@@ -12,6 +12,6 @@ int king_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8], in
 int piece_pinned(int* origin_xy, char line, char p_color, piece (*obj)[8][8]);
 int square_attacked(int* origin_xy, char p_color, piece (*obj)[8][8]);
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_move, int* castle);
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle);
 
 #endif

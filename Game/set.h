@@ -4,6 +4,7 @@
 #include "piece.h"
 
 void set_color(piece (*obj)[8][8]);
+void set_enpassant(piece (*obj)[8][8]);
 
 void set_rooks(piece (*obj)[8][8]);
 void set_knights(piece (*obj)[8][8]);

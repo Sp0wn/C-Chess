@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8], int* last_move)
+int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8])
 {
     //Pawn can't move to the same square of a friendly piece
     if((*obj)[move_xy[1]][move_xy[0]].name != ' ' && (*obj)[move_xy[1]][move_xy[0]].color == p_color) {
@@ -18,40 +18,19 @@ int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8], in
         if((*obj)[origin_xy[1]][origin_xy[0]].color == 'w' && move_xy[1] < origin_xy[1]) {
             return 0;
         } else if((*obj)[origin_xy[1]][origin_xy[0]].color == 'b' && move_xy[1] > origin_xy[1]) {
-            return 0;
+            return 0;            
         } else {
             //Pawn can capture pieces in the next squares in diagonal
             if((abs(move_xy[0] - origin_xy[0]) == 1 && abs(move_xy[1] - origin_xy[1]) == 1) && (*obj)[move_xy[1]][move_xy[0]].name != ' ') {
                 return 1;
             //Pawn can en passant
-            } else if(abs(move_xy[0] - origin_xy[0]) == 1 && abs(move_xy[1] - origin_xy[1]) == 1) {
-                if(last_move == NULL) {
-                    return 0;
-                } else {
-                    if(p_color == 'w') {
-                        if(((origin_xy[0] + 1) == last_move[0] || (origin_xy[0] - 1) == last_move[0]) && origin_xy[1] == last_move[1]) {
-                            if(move_xy[0] == last_move[0] && (*obj)[last_move[1]][last_move[0]].name == 'p') {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        } else {
-                            return 0;
-                        }
-                    } else {
-                        if(((origin_xy[0] + 1) == last_move[0] || (origin_xy[0] - 1) == last_move[0]) && origin_xy[1] == last_move[1]) {
-                            if(move_xy[0] == last_move[0] && (*obj)[last_move[1]][last_move[0]].name == 'P') {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        } else {
-                            return 0;
-                        }
-                    }
-                }
+            } else if((abs(move_xy[0] - origin_xy[0]) == 1 && abs(move_xy[1] - origin_xy[1]) == 1) && (*obj)[origin_xy[1]][move_xy[0]].enpassant == 1) {
+                return 1;
             //Pawn can't move between columns or move more than 2 squares
             } else if(origin_xy[0] != move_xy[0] || abs(move_xy[1] - origin_xy[1]) > 2) {
+                return 0;
+            //Pawn can't capture vertically
+            } else if((*obj)[move_xy[1]][move_xy[0]].name != ' ') {
                 return 0;
             } else {
                 //Pawn can move 2 squares if it hasn't move
@@ -65,7 +44,7 @@ int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8], in
                     return 1;
                 }
             }
-        }
+        }   
     }
 }
 
@@ -362,7 +341,7 @@ int square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
     return 0;
 }
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_move, int* castle)
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle)
 {
     int row, column, n_moves, legal;
     int h_pinned, v_pinned, d_pinned;
@@ -382,7 +361,7 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int* last_mo
             move_xy[0] = column;
             //Checks for piece type
             if(symbol == 'P' || symbol == 'p') {
-                legal = pawn_move(origin_xy, move_xy, p_color, obj, last_move);
+                legal = pawn_move(origin_xy, move_xy, p_color, obj);
             } else if(symbol == 'N' || symbol == 'n') {
                 legal = knight_move(origin_xy, move_xy, p_color, obj);
             } else if(symbol == 'B' || symbol == 'b') {

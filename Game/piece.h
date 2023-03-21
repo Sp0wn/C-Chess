@@ -4,6 +4,7 @@
 struct Piece {
     char color;
     char name;
+    int enpassant;
 };
 
 typedef struct Piece piece;

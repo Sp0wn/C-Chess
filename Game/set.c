@@ -4,8 +4,7 @@
 
 void set_color(piece (*obj)[8][8])
 {
-    int row;
-    int column;
+    int row, column;
 
     for(row = 0;row < 8; row++) {
         for(column = 0; column < 8; column++) {
@@ -14,6 +13,17 @@ void set_color(piece (*obj)[8][8])
             } else if(row == 6 || row == 7) {
                 (*obj)[row][column].color = 'b';
             }
+        }
+    }
+}
+
+void set_enpassant(piece (*obj)[8][8])
+{
+    int row, column;
+
+    for(row = 0;row < 8; row++) {
+        for(column = 0; column < 8; column++) {
+            (*obj)[row][column].enpassant = 0;
         }
     }
 }
@@ -77,6 +87,7 @@ void set_blank(piece (*obj)[8][8])
 void set_pieces(piece (*obj)[8][8])
 {
     set_color(obj);
+    set_enpassant(obj);
     set_rooks(obj);
     set_knights(obj);
     set_bishops(obj);

@@ -4,6 +4,9 @@
 //Includes struct reference
 #include "../Game/piece.h"
 
+//Includes set functions
+#include "../Game/set.h"
+
 //Libraries
 #include <curses.h>
 #include <ncurses.h>
@@ -17,7 +20,7 @@
 #define DOWN_BOARD "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
 #define SPACE_BOARD "|---|---|---|---|---|---|---|---|"
 
-void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, int* theme)
+void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, int* theme, int* king, char c_win)
 {
     //Function to show the current state of the board
     int x, y;
@@ -77,8 +80,16 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                             break;
                         } else {
                             if(points == n_moves) {
+                                if(king != NULL) {
+                                    if(king[0] == column && king[1] == row) {
+                                        wprintw(win, "| ");
+                                        wattron(win, COLOR_PAIR(theme[1]));
+                                        wprintw(win, "%c ", (*obj)[row][column].name);
+                                        wattroff(win, COLOR_PAIR(theme[1]));
+                                        continue;
+                                    }
+                                }
                                 wprintw(win, "| %c ", (*obj)[row][column].name);
-                                break;
                             }
                         }
                     }
@@ -89,6 +100,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         wprintw(win, "%c ", (*obj)[row][column].name);
                         wattroff(win, COLOR_PAIR(theme[0]));
                     } else {
+                        if(king != NULL) {
+                            if(king[0] == column && king[1] == row) {
+                                wprintw(win, "| ");
+                                wattron(win, COLOR_PAIR(theme[1]));
+                                wprintw(win, "%c ", (*obj)[row][column].name);
+                                wattroff(win, COLOR_PAIR(theme[1]));
+                                continue;
+                            }
+                        } 
                         wprintw(win, "| %c ", (*obj)[row][column].name);
                     }
                 } else {
@@ -131,8 +151,16 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                             break;
                         } else {
                             if(points == n_moves) {
+                                if(king != NULL) {
+                                    if(king[0] == column && king[1] == row) {
+                                        wprintw(win, "| ");
+                                        wattron(win, COLOR_PAIR(theme[1]));
+                                        wprintw(win, "%c ", (*obj)[row][column].name);
+                                        wattroff(win, COLOR_PAIR(theme[1]));
+                                        continue;
+                                    }
+                                }
                                 wprintw(win, "| %c ", (*obj)[row][column].name);
-                                break;
                             }
                         }
                     }
@@ -143,6 +171,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         wprintw(win, "%c ", (*obj)[row][column].name);
                         wattroff(win, COLOR_PAIR(theme[0]));
                     } else {
+                        if(king != NULL) {
+                            if(king[0] == column && king[1] == row) {
+                                wprintw(win, "| ");
+                                wattron(win, COLOR_PAIR(theme[1]));
+                                wprintw(win, "%c ", (*obj)[row][column].name);
+                                wattroff(win, COLOR_PAIR(theme[1]));
+                                continue;
+                            }
+                        } 
                         wprintw(win, "| %c ", (*obj)[row][column].name);
                     }
                 } else {
@@ -317,8 +354,13 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
         if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
             //Resets square of en passant
             if((symbol == 'P' || symbol == 'p') && (*obj)[move_xy[1]][move_xy[0]].name == ' ') {
-                (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
-                (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
+                if(color == 'w') {
+                    (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
+                    (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
+                } else {
+                    (*obj)[move_xy[1] + 1][move_xy[0]] = blank;
+                    (*obj)[move_xy[1] + 1][move_xy[0]].name = ' ';
+                }
             }
             //Sets castle privilege
             if(symbol == 'K' || symbol == 'k') {
@@ -345,6 +387,12 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
                 } else if(origin_xy[0] == 7) {
                     castle[1] = 0;
                 }
+            }
+            //Resets en passant attribute
+            set_enpassant(obj);
+            //Sets en passant attribute
+            if((symbol == 'P' || symbol == 'p') && abs(move_xy[1] - origin_xy[1]) == 2) {
+                (*obj)[move_xy[1]][move_xy[0]].enpassant = 1;
             }
             //Moves the struct
             (*obj)[move_xy[1]][move_xy[0]].name = symbol;
