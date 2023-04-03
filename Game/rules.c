@@ -134,9 +134,8 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
         //King can only move in a range of one square
         if((move_xy[1] == origin_xy[1]) && (abs(move_xy[0] - origin_xy[0]) == 2)) {
             //King can't castle if in check
-            if(square_attacked(origin_xy, p_color, obj) != NULL) {
-                return 0;
-            }
+            if(square_attacked(origin_xy, p_color, NULL, obj) != NULL) {
+                return 0; }
             direction = (move_xy[0] - origin_xy[0]) / 2;
             move_trace[1] = origin_xy[1];
             //Short castling
@@ -146,7 +145,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
                 } else {
                     for(trace = 1; trace < 3; trace++) {
                         move_trace[0] = origin_xy[0] + trace;
-                        if((*obj)[origin_xy[1]][origin_xy[0] + trace].name != ' ' || square_attacked(move_trace, p_color, obj) != NULL) {
+                        if((*obj)[origin_xy[1]][origin_xy[0] + trace].name != ' ' || square_attacked(move_trace, p_color, NULL, obj) != NULL) {
                             return 0; 
                         }
                     }
@@ -159,7 +158,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
                 } else {
                      for(trace = 1; trace < 4; trace++) {
                         move_trace[0] = origin_xy[0] - trace;
-                        if((*obj)[origin_xy[1]][origin_xy[0] - trace].name != ' ' || square_attacked(move_trace, p_color, obj) != NULL) {
+                        if((*obj)[origin_xy[1]][origin_xy[0] - trace].name != ' ' || square_attacked(move_trace, p_color, NULL, obj) != NULL) {
                             return 0; 
                         }
                     }
@@ -170,7 +169,7 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
             return 0;
         } else {
             //If the square is threatened can't move
-            if(square_attacked(move_xy, p_color, obj) != NULL) {
+            if(square_attacked(move_xy, p_color, NULL, obj) != NULL) {
                 return 0;
             } else {
                 return 1;
@@ -293,7 +292,7 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
     return 0;
 }
 
-int** square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
+int** square_attacked(int *origin_xy, char p_color, int** old_arr, piece (*obj)[8][8])
 {
     int pawn_left, pawn_right;
     int row, column;
@@ -303,10 +302,18 @@ int** square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
     char rook_symbol, queen_symbol, king_symbol;
     int** attackers;
     int* attack;
-    int n_attacks;
+    int n_attacks, old_n_attacks;
     
     attackers = NULL;
     n_attacks = 0;
+
+    if(old_arr != NULL) {
+        old_n_attacks = (*(old_arr-1))[0];
+        for(int p = 0; p < old_n_attacks; p++) {
+            free(old_arr[p]);
+        }
+        free(old_arr);
+    }
 
     //Check if attacked by pawn
     if(p_color == 'w') {
@@ -392,9 +399,9 @@ int** square_attacked(int *origin_xy, char p_color, piece (*obj)[8][8])
     }
 }
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle, int* king)
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle, int* king, int** old_arr)
 {
-    int row, column, n_moves, n_attacks, legal;
+    int row, column, n_moves, n_attacks, legal, old_n_moves;
     int h_pinned, v_pinned, d_pinned;
     int* move;
     int** moves;
@@ -402,6 +409,15 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
 
     moves = NULL;
     n_moves = 0;
+
+    if(old_arr != NULL) {
+        old_n_moves = (*(old_arr-1))[0];
+        for(int p = 0; p < old_n_moves; p++) {
+            free(old_arr[p]);
+        }
+        free(old_arr-1);
+    }
+
 
     if(attackers != NULL) {
         n_attacks = (*(attackers-1))[0];

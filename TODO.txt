@@ -1,4 +1,3 @@
--Add memory deletions for legal moves function
 -Solve crash when clicking spaces between the squares
 -Add unicode pieces
 -Add player vs player local game (Time and moves in bottom panel)
