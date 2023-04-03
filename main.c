@@ -101,7 +101,7 @@ int main()
             case 4:
                 show_logo(theme, 0);
                 set_pieces(b_ptr);
-                show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ', config[3]);
 
                 int* w_castle;
                 w_castle = malloc(2 * sizeof(int));
@@ -123,64 +123,64 @@ int main()
 
                 int* c = get_move(NULL, config[2]);
                 int **b1 = legal_moves(c, b_ptr, (*b_ptr)[c[1]][c[0]].color, NULL, w_castle, w_king, NULL);
-                show_board(config[2], b_ptr, b1, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b1, NULL, theme, NULL, ' ', config[3]);
                 int* d = get_move(NULL, config[2]);
                 make_move(d, c, b1, b_ptr, reset_p, w_castle);
-                show_board(config[2], b_ptr, NULL, d, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d, theme, NULL, ' ', config[3]);
 
                 int* c2 = get_move(NULL, config[2]);
                 int **b2 = legal_moves(c2, b_ptr, (*b_ptr)[c2[1]][c2[0]].color, NULL, b_castle, b_king, NULL);
-                show_board(config[2], b_ptr, b2, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b2, NULL, theme, NULL, ' ', config[3]);
                 int* d2 = get_move(NULL, config[2]);
                 make_move(d2, c2, b2, b_ptr, reset_p, b_castle);
-                show_board(config[2], b_ptr, NULL, d2, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d2, theme, NULL, ' ', config[3]);
 
                 int* c3 = get_move(NULL, config[2]);
                 attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
                 int **b3 = legal_moves(c3, b_ptr, (*b_ptr)[c3[1]][c3[0]].color, attack_w, w_castle, w_king, b1);
-                show_board(config[2], b_ptr, b3, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b3, NULL, theme, NULL, ' ', config[3]);
                 int* d3 = get_move(NULL, config[2]);
                 make_move(d3, c3, b3, b_ptr, reset_p, w_castle);
-                show_board(config[2], b_ptr, NULL, d3, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d3, theme, NULL, ' ', config[3]);
 
                 int* c4 = get_move(NULL, config[2]);
                 attack_b = square_attacked(b_king, 'b', attack_b, b_ptr);
                 int **b4 = legal_moves(c4, b_ptr, (*b_ptr)[c4[1]][c4[0]].color, attack_b, b_castle, b_king, b2);
-                show_board(config[2], b_ptr, b4, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b4, NULL, theme, NULL, ' ', config[3]);
                 int* d4 = get_move(NULL, config[2]);
                 make_move(d4, c4, b4, b_ptr, reset_p, b_castle);
-                show_board(config[2], b_ptr, NULL, d4, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d4, theme, NULL, ' ', config[3]);
 
                 int* a = get_move(NULL, config[2]);
                 attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
                 int **b = legal_moves(a, b_ptr, (*b_ptr)[a[1]][a[0]].color, attack_w, w_castle, w_king, b3);
-                show_board(config[2], b_ptr, b, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b, NULL, theme, NULL, ' ', config[3]);
                 int* d5 = get_move(NULL, config[2]);
                 make_move(d5, a, b, b_ptr, reset_p, w_castle);
-                show_board(config[2], b_ptr, NULL, d5, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d5, theme, NULL, ' ', config[3]);
 
                 int* c5 = get_move(NULL, config[2]);
                 attack_b = square_attacked(b_king, 'b', attack_b, b_ptr);
                 int **b5 = legal_moves(c5, b_ptr, (*b_ptr)[c5[1]][c5[0]].color, attack_b, b_castle, b_king, b4);
-                show_board(config[2], b_ptr, b5, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b5, NULL, theme, NULL, ' ', config[3]);
                 int* d6 = get_move(NULL, config[2]);
                 make_move(d6, c5, b5, b_ptr, reset_p, b_castle);
-                show_board(config[2], b_ptr, NULL, d6, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, d6, theme, NULL, ' ', config[3]);
 
                 int* c6 = get_move(NULL, config[2]);
                 attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
                 int **b6 = legal_moves(c6, b_ptr, (*b_ptr)[c6[1]][c6[0]].color, attack_w, w_castle, w_king, b);
-                show_board(config[2], b_ptr, b6, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, b6, NULL, theme, NULL, ' ', config[3]);
                 int* d7 = get_move(NULL, config[2]);
                 make_move(d7, c6, b6, b_ptr, reset_p, w_castle);
-                show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ');
+                show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ', config[3]);
 
                 sleep(5);
                 break;
 
             //Options
             case 5:
-                options_menu(config[0], config[1], config[2], theme);
+                options_menu(config[0], config[1], config[2], theme, config[3]);
                 clear_config_cache(config, theme);
                 config = load_config();
                 theme = load_theme(config[1]);

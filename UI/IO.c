@@ -56,7 +56,7 @@ void show_logo(int* theme, int animation)
     refresh();
 }
 
-void options_menu(char* lang, char* color, char* piece, int* theme)
+void options_menu(char* lang, char* color, char* piece, int* theme, char* style)
 {
     //Function to show the options menu
     //after option 5
@@ -69,13 +69,14 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
     keypad(win, TRUE);
 
     int option, ch, done, i;
-    int var1, var2, var3;
+    int var1, var2, var3, var4;
 
     //Struct for the options strings
     struct N_Options {
         char option1[32];
         char option2[32];
         char option3[32];
+        char option4[32];
         char* allOptions[5];
     };
 
@@ -87,7 +88,9 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         char variables2[3][2];
         char variable3[2];
         char variables3[2][2];
-        char* allVariables[3];
+        char variable4[12];
+        char variables4[2][12];
+        char* allVariables[4];
     };
 
     //Set the strings accordingly to the language
@@ -96,16 +99,19 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         strcpy(Menu_Options.option1, "[1]: Language = ");
         strcpy(Menu_Options.option2, "[2]: Color = ");
         strcpy(Menu_Options.option3, "[3]: Pieces = ");
+        strcpy(Menu_Options.option4, "[4]: Style = ");
         var1 = 1;
     } else if(strcmp(lang, "es") == 0) {
         strcpy(Menu_Options.option1, "[1]: Idioma = ");
         strcpy(Menu_Options.option2, "[2]: Color = ");
         strcpy(Menu_Options.option3, "[3]: Piezas = ");
+        strcpy(Menu_Options.option4, "[4]: Estilo = ");
         var1 = 2;
     } else if(strcmp(lang, "de") == 0) {
         strcpy(Menu_Options.option1, "[1]: Sprache = ");
         strcpy(Menu_Options.option2, "[2]: Farbe = ");
         strcpy(Menu_Options.option3, "[3]: Stuecke = ");
+        strcpy(Menu_Options.option4, "[4]: Stil = ");
         var1 = 3;
     }
 
@@ -125,16 +131,24 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
         var3 = 2;
     }
 
+    if(strcmp(style, "ASCII  ") == 0) {
+        var4 = 1;
+    } else if(strcmp(style, "Unicode") == 0) {
+        var4 = 2;
+    }
+
     //Track the options
     Menu_Options.allOptions[0] = Menu_Options.option1;
     Menu_Options.allOptions[1] = Menu_Options.option2;
     Menu_Options.allOptions[2] = Menu_Options.option3;
+    Menu_Options.allOptions[3] = Menu_Options.option4;
 
     //Set the possibles variables for each option
     struct V_Options Menu_Variables;
     strcpy(Menu_Variables.variable1, lang);
     strcpy(Menu_Variables.variable2, color);
     strcpy(Menu_Variables.variable3, piece);
+    strcpy(Menu_Variables.variable4, style);
 
     strcpy(Menu_Variables.variables1[0], "en");
     strcpy(Menu_Variables.variables1[1], "es");
@@ -147,10 +161,14 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
     strcpy(Menu_Variables.variables3[0], "W");
     strcpy(Menu_Variables.variables3[1], "B");
 
+    strcpy(Menu_Variables.variables4[0], "ASCII  ");
+    strcpy(Menu_Variables.variables4[1], "Unicode");
+
     //Track the variables
     Menu_Variables.allVariables[0] = Menu_Variables.variable1;
     Menu_Variables.allVariables[1] = Menu_Variables.variable2;
     Menu_Variables.allVariables[2] = Menu_Variables.variable3;
+    Menu_Variables.allVariables[3] = Menu_Variables.variable4;
 
     wattron(win, COLOR_PAIR(theme[1]));
     box(win, 0, 0);
@@ -162,7 +180,7 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
     //Starts printing the menu 
     //with a loop
     while(!(done)) {
-        for(i = 1; i < 4; i++) {
+        for(i = 1; i < 5; i++) {
             if(option == i) {
                 //Highlights current option
                 wattron(win, A_STANDOUT);
@@ -187,11 +205,11 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
 
             //Cycles between options
             case KEY_DOWN:
-                option = (option == 3) ? 1 : option + 1;
+                option = (option == 4) ? 1 : option + 1;
                 break;
 
             case KEY_UP:
-                option = (option == 1) ? 3 : option - 1;
+                option = (option == 1) ? 4 : option - 1;
                 break;
 
             //Exit and save the configuration
@@ -211,6 +229,8 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
                 fputs(Menu_Variables.allVariables[1], savefile);
                 fputs("\n", savefile);
                 fputs(Menu_Variables.allVariables[2], savefile);
+                fputs("\n", savefile);
+                fputs(Menu_Variables.allVariables[3], savefile);
                 fputs("\n", savefile);
 
                 fclose(savefile);
@@ -233,6 +253,11 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
                         var3 = (var3 == 1) ? 2 : var3 - 1;
                         strcpy(Menu_Variables.variable3, Menu_Variables.variables3[var3 - 1]);
                         break;
+
+                    case 4:
+                        var4 = (var4 == 1) ? 2 : var4 - 1;
+                        strcpy(Menu_Variables.variable4, Menu_Variables.variables4[var4 - 1]);
+                        break;
                 }
                 break;
 
@@ -251,6 +276,11 @@ void options_menu(char* lang, char* color, char* piece, int* theme)
                     case 3:
                         var3 = (var3 == 2) ? 1 : var3 + 1;
                         strcpy(Menu_Variables.variable3, Menu_Variables.variables3[var3 - 1]);
+                        break;
+
+                    case 4:
+                        var4 = (var4 == 2) ? 1 : var4 + 1;
+                        strcpy(Menu_Variables.variable4, Menu_Variables.variables4[var4 - 1]);
                         break;
                 }
                 break;
@@ -378,15 +408,17 @@ char** load_config()
 
     //Start and allocate memory for
     //each array of pointers
-    char* lang, *color, *piece;
+    char* lang, *color, *piece, *style;
     lang = malloc(4 * sizeof(char));
     color = malloc(4 * sizeof(char));
     piece = malloc(4 * sizeof(char));
+    style = malloc(4 * sizeof(char));
     
     //Set pointers
     config[0] = lang;
     config[1] = color;
     config[2] = piece;
+    config[3] = style;
 
     FILE* configfile;
     char config_dir[64];
@@ -405,6 +437,9 @@ char** load_config()
 
     fgets(config[2], 4, (FILE*)configfile);
     config[2][strcspn(config[2], "\n")] = 0;
+
+    fgets(config[3], 8, (FILE*)configfile);
+    config[3][strcspn(config[3], "\n")] = 0;
 
     fclose(configfile);
     
@@ -455,6 +490,7 @@ void clear_config_cache(char** ptr_c, int* ptr_t)
     free(ptr_c[0]);
     free(ptr_c[1]);
     free(ptr_c[2]);
+    free(ptr_c[3]);
 
     //Config pointer
     free(ptr_c);

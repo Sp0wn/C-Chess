@@ -14,13 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
 
 //Board codes
 #define UP_BOARD "_______________________________"
 #define DOWN_BOARD "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"
 #define SPACE_BOARD "|---|---|---|---|---|---|---|---|"
 
-void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, int* theme, int* king, char c_win)
+void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, int* theme, int* king, char c_win, char* style)
 {
     //Function to show the current state of the board
     int x, y;
@@ -75,7 +76,7 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
                             wprintw(win, "| ");
                             wattron(win, COLOR_PAIR(theme[2]));
-                            wprintw(win, "%c ", (*obj)[row][column].name);
+                            wprintw(win, "%lc ", show_piece(row, column, style, obj));
                             wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         } else {
@@ -84,12 +85,12 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                                     if(king[0] == column && king[1] == row) {
                                         wprintw(win, "| ");
                                         wattron(win, COLOR_PAIR(theme[1]));
-                                        wprintw(win, "%c ", (*obj)[row][column].name);
+                                        wprintw(win, "%lc ", show_piece(row, column, style, obj));
                                         wattroff(win, COLOR_PAIR(theme[1]));
                                         continue;
                                     }
                                 }
-                                wprintw(win, "| %c ", (*obj)[row][column].name);
+                                wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                             }
                         }
                     }
@@ -97,22 +98,22 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                     if(row == last_move[1] && column == last_move[0]) {
                         wprintw(win, "| ");
                         wattron(win, COLOR_PAIR(theme[0]));
-                        wprintw(win, "%c ", (*obj)[row][column].name);
+                        wprintw(win, "%lc ", show_piece(row, column, style, obj));
                         wattroff(win, COLOR_PAIR(theme[0]));
                     } else {
                         if(king != NULL) {
                             if(king[0] == column && king[1] == row) {
                                 wprintw(win, "| ");
                                 wattron(win, COLOR_PAIR(theme[1]));
-                                wprintw(win, "%c ", (*obj)[row][column].name);
+                                wprintw(win, "%lc ", show_piece(row, column, style, obj));
                                 wattroff(win, COLOR_PAIR(theme[1]));
                                 continue;
                             }
                         } 
-                        wprintw(win, "| %c ", (*obj)[row][column].name);
+                        wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 } else {
-                    wprintw(win, "| %c ", (*obj)[row][column].name);
+                    wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                 }
             }
             wprintw(win, "|");
@@ -146,7 +147,7 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         } else if((row == moves_arr[1] && column == moves_arr[0]) && (*obj)[row][column].name != ' ') {
                             wprintw(win, "| ");
                             wattron(win, COLOR_PAIR(theme[2]));
-                            wprintw(win, "%c ", (*obj)[row][column].name);
+                            wprintw(win, "%lc ", show_piece(row, column, style, obj));
                             wattroff(win, COLOR_PAIR(theme[2]));
                             break;
                         } else {
@@ -155,12 +156,12 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                                     if(king[0] == column && king[1] == row) {
                                         wprintw(win, "| ");
                                         wattron(win, COLOR_PAIR(theme[1]));
-                                        wprintw(win, "%c ", (*obj)[row][column].name);
+                                        wprintw(win, "%lc ", show_piece(row, column, style, obj));
                                         wattroff(win, COLOR_PAIR(theme[1]));
                                         continue;
                                     }
                                 }
-                                wprintw(win, "| %c ", (*obj)[row][column].name);
+                                wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                             }
                         }
                     }
@@ -168,22 +169,22 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                     if(row == last_move[1] && column == last_move[0]) {
                         wprintw(win, "| ");
                         wattron(win, COLOR_PAIR(theme[0]));
-                        wprintw(win, "%c ", (*obj)[row][column].name);
+                        wprintw(win, "%lc ", show_piece(row, column, style, obj));
                         wattroff(win, COLOR_PAIR(theme[0]));
                     } else {
                         if(king != NULL) {
                             if(king[0] == column && king[1] == row) {
                                 wprintw(win, "| ");
                                 wattron(win, COLOR_PAIR(theme[1]));
-                                wprintw(win, "%c ", (*obj)[row][column].name);
+                                wprintw(win, "%lc ", show_piece(row, column, style, obj));
                                 wattroff(win, COLOR_PAIR(theme[1]));
                                 continue;
                             }
                         } 
-                        wprintw(win, "| %c ", (*obj)[row][column].name);
+                        wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 } else {
-                    wprintw(win, "| %c ", (*obj)[row][column].name);
+                    wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                 }
             }
             wprintw(win, "|");
@@ -254,6 +255,56 @@ int show_promotion(int *theme, piece (*obj)[8][8], char p_color, int column)
         delwin(win);
     }
     return 0;
+}
+
+int show_piece(int row, int column, char *style, piece (*obj)[8][8])
+{
+    int style_val, piece;
+    char symbol, color;
+
+    if(strcmp(style, "ASCII  ") == 0) {
+        style_val = 1;
+    } else {
+        style_val = 2;
+    }
+
+    symbol = (*obj)[row][column].name;
+    color = (*obj)[row][column].color;
+    
+    if(style_val == 1) {
+        if(symbol == 'p' || symbol == 'P') {
+            piece = (color == 'w') ? 80 : 112; 
+        } else if(symbol == 'n' || symbol == 'N') {
+            piece = (color == 'w') ? 78 : 110;
+        } else if(symbol == 'b' || symbol == 'B') {
+            piece = (color == 'w') ? 66 : 98;
+        } else if(symbol == 'r' || symbol == 'R') {
+            piece = (color == 'w') ? 82 : 114;
+        } else if(symbol == 'q' || symbol == 'Q') {
+            piece = (color == 'w') ? 81 : 113;
+        } else if(symbol == 'k' || symbol == 'K') {
+            piece = (color == 'w') ? 75 : 107;
+        } else if(symbol == ' ' || symbol == ' ') {
+            piece = 32;
+        }
+    } else {
+        if(symbol == 'p' || symbol == 'P') {
+            piece = (color == 'w') ? 0x2659 : 0x265F; 
+        } else if(symbol == 'n' || symbol == 'N') {
+            piece = (color == 'w') ? 0x2658 : 0x265E;
+        } else if(symbol == 'b' || symbol == 'B') {
+            piece = (color == 'w') ? 0x2657 : 0x265D;
+        } else if(symbol == 'r' || symbol == 'R') {
+            piece = (color == 'w') ? 0x2656 : 0x265C;
+        } else if(symbol == 'q' || symbol == 'Q') {
+            piece = (color == 'w') ? 0x2655 : 0x265B;
+        } else if(symbol == 'k' || symbol == 'K') {
+            piece = (color == 'w') ? 0x2654 : 0x265A;
+        } else if(symbol == ' ' || symbol == ' ') {
+            piece = 32;
+        }
+    }
+    return piece;
 }
 
 int* get_move(int* old_xy, char* color)
