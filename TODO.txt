@@ -1,4 +1,3 @@
--Add player vs player local game (Time and moves in bottom panel)
 -Add analysis board (Load pgn/fen, edit board, starting positon) with engine lines, openings
 database, and evaluation
 -Add chess engine

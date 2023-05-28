@@ -7,6 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <pthread.h>
+
+#include "../Game/clock.h"
 
 //Time macro (2.5s)
 #define TIME 250000
@@ -499,3 +502,168 @@ void clear_config_cache(char** ptr_c, int* ptr_t)
     free(ptr_t);
 }
 
+void* load_clock(void* master_clock)
+{
+    //Gets struct and sets time variables
+    M_clock* local_clock = (M_clock*)master_clock;
+    int w_sec, w_min, b_sec, b_min;
+
+    //Creates window
+    int x, y;
+    getmaxyx(stdscr, y, x);    
+    WINDOW* win = newwin(3, 36, 26, (x / 2 - 18));
+    box(win, 0, 0);
+
+    //Neither clock has finished
+    while(!(local_clock->end)) {
+       //White turn
+        if(local_clock->turn == 1) {
+            local_clock->W_Clock = local_clock->W_Clock - 1;
+
+        //Black turn
+        } else {
+            local_clock->B_Clock = local_clock->B_Clock - 1;
+        }
+
+        //Calculate individual time forms
+        w_sec = local_clock->W_Clock % 60;
+        w_min = local_clock->W_Clock / 60;
+        b_sec = local_clock->B_Clock % 60;
+        b_min = local_clock->B_Clock / 60;
+
+        mvwprintw(win, 1, 1, "             ");
+        if(w_min < 10) {
+            mvwprintw(win, 1, 2, "%i", w_min);
+        } else {
+            mvwprintw(win, 1, 1, "%i", w_min);
+        }
+        mvwprintw(win, 1, 3, ":");
+        if(w_sec < 10) {
+            mvwprintw(win, 1, 5, "%i", w_sec);
+        } else {
+            mvwprintw(win, 1, 4, "%i", w_sec);
+        }
+        mvwprintw(win, 1, 7, "|");
+        if(b_min < 10) {
+            mvwprintw(win, 1, 10, "%i", b_min);
+        } else {
+            mvwprintw(win, 1, 9, "%i", b_min);
+        }
+        mvwprintw(win, 1, 11, ":");
+        if(b_sec < 10) {
+            mvwprintw(win, 1, 13, "%i", b_sec);
+        } else {
+            mvwprintw(win, 1, 12, "%i", b_sec);
+        }
+        wrefresh(win);
+
+        if((local_clock->W_Clock == 0) || (local_clock->B_Clock == 0)) {
+            local_clock->end = 1;
+        }
+
+        sleep(1);
+    }
+
+    return NULL;
+}
+
+void set_time(M_clock* master_clock, int* theme)
+{
+    int x, y, i;
+    int position, done, ch;
+
+    done = 0;
+    position = 1;
+
+    getmaxyx(stdscr, y, x);    
+    WINDOW* win = newwin(3, 36, 7, (x / 2 - 18));
+    keypad(win, TRUE);
+    attron(COLOR_PAIR(theme[0]));
+    box(win, 0, 0);
+    attroff(COLOR_PAIR(theme[0]));
+
+    int minute_format[2] = {0, 0};
+    int seconds_format[2] = {0, 0};
+
+    while(!done) {
+        for(i = 1; i < 3; i++) {
+            if(i == position) {
+                wattron(win, A_STANDOUT);
+                mvwprintw(win, 1, i, "%i", minute_format[i-1]);
+                wattroff(win, A_STANDOUT);
+                continue;
+            }
+            mvwprintw(win, 1, i, "%i", minute_format[i-1]);
+        }
+        wrefresh(win);
+
+        ch = wgetch(win);
+        
+        switch(ch) {
+            case KEY_UP:
+                minute_format[position-1] = (minute_format[position-1] == 9) ? 0 : minute_format[position-1] + 1;
+                break;
+
+            case KEY_DOWN:
+                minute_format[position-1] = (minute_format[position-1] == 0) ? 9 : minute_format[position-1] - 1;
+                break;
+            
+            case KEY_LEFT:
+                position = (position == 1) ? 2 : position - 1;
+                break;
+
+            case KEY_RIGHT:
+                position = (position == 2) ? 1 : position + 1;
+                break;
+
+            case ENTER:
+                done = 1;
+                break;
+
+        }
+    }
+
+    done = 0;
+    position = 1;
+
+    while(!done) {
+        for(i = 4; i < 6; i++) {
+            if(i == position+3) {
+                wattron(win, A_STANDOUT);
+                mvwprintw(win, 1, i, "%i", seconds_format[i-4]);
+                wattroff(win, A_STANDOUT);
+                continue;
+            }
+            mvwprintw(win, 1, i, "%i", seconds_format[i-4]);
+        }
+        wrefresh(win);
+
+        ch = wgetch(win);
+        
+        switch(ch) {
+            case KEY_UP:
+                seconds_format[position-1] = (seconds_format[position-1] == 9) ? 0 : seconds_format[position-1] + 1;
+                break;
+
+            case KEY_DOWN:
+                seconds_format[position-1] = (seconds_format[position-1] == 0) ? 9 : seconds_format[position-1] - 1;
+                break;
+            
+            case KEY_LEFT:
+                position = (position == 1) ? 2 : position - 1;
+                break;
+
+            case KEY_RIGHT:
+                position = (position == 2) ? 1 : position + 1;
+                break;
+
+            case ENTER:
+                done = 1;
+                break;
+
+        }
+    }
+    
+    master_clock->W_Clock = ((minute_format[0]*10 + minute_format[1])*60)+(seconds_format[0]*10)+seconds_format[1];
+    master_clock->B_Clock = ((minute_format[0]*10 + minute_format[1])*60)+(seconds_format[0]*10)+seconds_format[1];
+}

@@ -113,7 +113,19 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 } else {
-                    wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                    if(!(c_win == ' ')) {
+                        if((*obj)[row][column].color == c_win) {
+                            wprintw(win, "| ");
+                            wattron(win, COLOR_PAIR(theme[1]));
+                            wprintw(win, "%lc ", show_piece(row, column, style, obj));
+                            wattroff(win, COLOR_PAIR(theme[1]));
+                            continue;
+                        } else {
+                            wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                        }
+                    } else {
+                        wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                    }
                 }
             }
             wprintw(win, "|");
@@ -184,7 +196,19 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                         wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 } else {
-                    wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                    if(!(c_win == ' ')) {
+                        if((*obj)[row][column].color == c_win) {
+                            wprintw(win, "| ");
+                            wattron(win, COLOR_PAIR(theme[1]));
+                            wprintw(win, "%lc ", show_piece(row, column, style, obj));
+                            wattroff(win, COLOR_PAIR(theme[1]));
+                            continue;
+                        } else {
+                            wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                        }
+                    } else {
+                        wprintw(win, "| %lc ", show_piece(row, column, style, obj));
+                    }
                 }
             }
             wprintw(win, "|");
@@ -381,7 +405,7 @@ int* get_move(int* old_xy, char* color)
     return NULL;
 }
 
-int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank, int* castle)
+int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank, int* castle, int* king)
 {
     int n_moves;
     int* legal_array;
@@ -392,6 +416,10 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
         n_moves = (*(legal_moves-1))[0];
     } else {
         n_moves = 0;
+    }
+
+    if(move_xy == NULL) {
+        return 0;
     }
 
     //Gets struct variables
@@ -417,6 +445,11 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
             if(symbol == 'K' || symbol == 'k') {
                 castle[0] = 0;
                 castle[1] = 0;
+                
+                //Sets new king position
+                king[0] = move_xy[0];
+                king[1] = move_xy[1];
+
                 //Short castle
                 if(move_xy[0] - origin_xy[0] == 2) {
                     //Resets rook square and moves rook

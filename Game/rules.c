@@ -170,9 +170,9 @@ int king_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8], in
         } else {
             //If the square is threatened can't move
             if(square_attacked(move_xy, p_color, NULL, obj) != NULL) {
-                return 0;
-            } else {
                 return 1;
+            } else {
+                return 0;
             }
         }
     }
@@ -426,6 +426,12 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
     }
 
     char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
+    char color = (*obj)[origin_xy[1]][origin_xy[0]].color;
+
+    if(!(color == p_color)) {
+        return NULL;
+    }
+
     //Search for possibilities around all the board
     for(row = 0; row < 8; row++) {
         for(column = 0; column < 8; column++) {
