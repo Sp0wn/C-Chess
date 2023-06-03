@@ -508,6 +508,8 @@ void* load_clock(void* master_clock)
     M_clock* local_clock = (M_clock*)master_clock;
     int w_sec, w_min, b_sec, b_min;
 
+    sleep(1);
+
     //Creates window
     int x, y;
     getmaxyx(stdscr, y, x);    

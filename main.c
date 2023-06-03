@@ -135,21 +135,42 @@ int main()
                 int *move_1w, *move_2w, *move_1b, *move_2b;
                 int **moves_w, **moves_b;
                 int wm_done, bm_done;
+                int row, column;
+                int xy_temp[2];
 
                 move_1w = move_2w = move_1b = move_2b = NULL;
                 moves_w = moves_b = attack_w = attack_b = NULL;
 
                 while(1) {
                     //Checks if check or mate
-                    attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
-                    moves_w = legal_moves(w_king, b_ptr, 'w', NULL, w_castle, w_king, moves_w);
-                    if(!(attack_w == NULL) && moves_w == NULL) {
+                    attack_w = square_attacked(w_king, 'w', NULL, b_ptr);
+                    moves_w = NULL;
+                    for(row = 0;row < 8; row++) {
+                        for(column = 0; column < 8; column++) {
+                            xy_temp[0] = column;
+                            xy_temp[1] = row;
+                            if((*b_ptr)[row][column].color == 'w' && (*b_ptr)[row][column].name == 'K') {
+                                moves_w = legal_moves(w_king, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
+                            } else if((*b_ptr)[row][column].color == 'w') {
+                                moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
+                            } else {
+                                continue;
+                            }
+                            if((moves_w != NULL)) {
+                                break;
+                            }
+                        }
+                        if((moves_w != NULL)) {
+                            break;
+                        }
+                    }
+                    if((attack_w != NULL) && moves_w == NULL) {
                         pthread_cancel(Clock_P);
                         show_board(config[2], b_ptr, NULL, NULL, theme, NULL, 'b', config[3]);
                         sleep(5);
                         endwin();
                         exit(0);
-                    } else if(!(attack_w == NULL)) {
+                    } else if((attack_w != NULL)) {
                         show_board(config[2], b_ptr, NULL, NULL, theme, w_king, ' ', config[3]);
                     }
 
@@ -157,11 +178,12 @@ int main()
                     if (Clock_struct.end == 1) break;
                     do {
                         move_1w = get_move(move_1w, config[2]);
-                        moves_w = legal_moves(move_1w, b_ptr, 'w', NULL, w_castle, w_king, moves_w);
+                        attack_w = square_attacked(w_king, 'w', NULL, b_ptr);
+                        moves_w = legal_moves(move_1w, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
                     } while(move_1w == NULL || moves_w == NULL);
                     if (Clock_struct.end == 1) break;
 
-                    if(!(attack_w == NULL)) {
+                    if((attack_w != NULL)) {
                         show_board(config[2], b_ptr, moves_w, NULL, theme, w_king, ' ', config[3]);
                     } else {
                         show_board(config[2], b_ptr, moves_w, NULL, theme, NULL, ' ', config[3]);
@@ -180,25 +202,45 @@ int main()
                     //Changes turn to black
                     Clock_struct.turn = 2;
 
-                    attack_b = square_attacked(b_king, 'b', attack_b, b_ptr);
-                    moves_b = legal_moves(b_king, b_ptr, 'b', NULL, b_castle, b_king, moves_b);
-                    if(!(attack_b == NULL) && moves_b == NULL) {
+                    attack_b = square_attacked(b_king, 'b', NULL, b_ptr);
+                    moves_b = NULL;
+                    for(row = 0;row < 8; row++) {
+                        for(column = 0; column < 8; column++) {
+                            xy_temp[0] = column;
+                            xy_temp[1] = row;
+                            if((*b_ptr)[row][column].color == 'b' && (*b_ptr)[row][column].color == 'k') {
+                                moves_b = legal_moves(b_king, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
+                            } else if((*b_ptr)[row][column].color == 'b') {
+                                moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
+                            } else {
+                                continue;
+                            }
+                            if((moves_b != NULL)) {
+                                break;
+                            }
+                        }
+                        if((moves_b != NULL)) {
+                            break;
+                        }
+                    }
+                    if((attack_b != NULL) && moves_b == NULL) {
                         pthread_cancel(Clock_P);
                         show_board(config[2], b_ptr, NULL, NULL, theme, NULL, 'w', config[3]);
                         sleep(5);
                         endwin();
                         exit(0);
-                    } else if(!(attack_b == NULL)) {
+                    } else if((attack_b != NULL)) {
                         show_board(config[2], b_ptr, NULL, NULL, theme, b_king, ' ', config[3]);
                     }
                     if (Clock_struct.end == 1) break;
                     do {
                         move_1b = get_move(move_1b, config[2]);
-                        moves_b = legal_moves(move_1b, b_ptr, 'b', NULL, b_castle, b_king, moves_b);
+                        attack_b = square_attacked(b_king, 'b', NULL, b_ptr);
+                        moves_b = legal_moves(move_1b, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
                     } while(move_1b == NULL || moves_b == NULL);
                     if (Clock_struct.end == 1) break;
 
-                    if(!(attack_b == NULL)) {
+                    if((attack_b != NULL)) {
                         show_board(config[2], b_ptr, moves_b, NULL, theme, b_king, ' ', config[3]);
                     } else {
                         show_board(config[2], b_ptr, moves_b, NULL, theme, NULL, ' ', config[3]);
@@ -215,6 +257,7 @@ int main()
                     //Changes turn to white
                     Clock_struct.turn = 1;
                 }
+                break;
 
             //Options
             case 5:
