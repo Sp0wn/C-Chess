@@ -143,16 +143,16 @@ int main()
 
                 while(1) {
                     //Checks if check or mate
-                    attack_w = square_attacked(w_king, 'w', NULL, b_ptr);
+                    attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
                     moves_w = NULL;
                     for(row = 0;row < 8; row++) {
                         for(column = 0; column < 8; column++) {
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'w' && (*b_ptr)[row][column].name == 'K') {
-                                moves_w = legal_moves(w_king, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
+                                moves_w = legal_moves(w_king, b_ptr, 'w', attack_w, w_castle, w_king, moves_w);
                             } else if((*b_ptr)[row][column].color == 'w') {
-                                moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
+                                moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, moves_w);
                             } else {
                                 continue;
                             }
@@ -178,8 +178,8 @@ int main()
                     if (Clock_struct.end == 1) break;
                     do {
                         move_1w = get_move(move_1w, config[2]);
-                        attack_w = square_attacked(w_king, 'w', NULL, b_ptr);
-                        moves_w = legal_moves(move_1w, b_ptr, 'w', attack_w, w_castle, w_king, NULL);
+                        attack_w = square_attacked(w_king, 'w', attack_w, b_ptr);
+                        moves_w = legal_moves(move_1w, b_ptr, 'w', attack_w, w_castle, w_king, moves_w);
                     } while(move_1w == NULL || moves_w == NULL);
                     if (Clock_struct.end == 1) break;
 
@@ -202,16 +202,16 @@ int main()
                     //Changes turn to black
                     Clock_struct.turn = 2;
 
-                    attack_b = square_attacked(b_king, 'b', NULL, b_ptr);
+                    attack_b = square_attacked(b_king, 'b', attack_b, b_ptr);
                     moves_b = NULL;
                     for(row = 0;row < 8; row++) {
                         for(column = 0; column < 8; column++) {
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'b' && (*b_ptr)[row][column].color == 'k') {
-                                moves_b = legal_moves(b_king, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
+                                moves_b = legal_moves(b_king, b_ptr, 'b', attack_b, b_castle, b_king, moves_b);
                             } else if((*b_ptr)[row][column].color == 'b') {
-                                moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
+                                moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, moves_b);
                             } else {
                                 continue;
                             }
@@ -235,8 +235,8 @@ int main()
                     if (Clock_struct.end == 1) break;
                     do {
                         move_1b = get_move(move_1b, config[2]);
-                        attack_b = square_attacked(b_king, 'b', NULL, b_ptr);
-                        moves_b = legal_moves(move_1b, b_ptr, 'b', attack_b, b_castle, b_king, NULL);
+                        attack_b = square_attacked(b_king, 'b', attack_b, b_ptr);
+                        moves_b = legal_moves(move_1b, b_ptr, 'b', attack_b, b_castle, b_king, moves_b);
                     } while(move_1b == NULL || moves_b == NULL);
                     if (Clock_struct.end == 1) break;
 

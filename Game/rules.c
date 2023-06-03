@@ -548,8 +548,12 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                                 }
                                 int direction_y_move = (attack_arr[1] - move_xy[1]) / abs(attack_arr[1] - move_xy[1]);
                                 int direction_y_king = (attack_arr[1] - king[1]) / abs(attack_arr[1] - king[1]);
-                                if(direction_x_king == direction_x_move && direction_y_king == direction_y_move) {
-                                    legal = 1;
+                                if((direction_x_king == direction_x_move) && (direction_y_king == direction_y_move)) {
+                                    if(abs(attack_arr[1] - move_xy[1]) == abs(attack_arr[0] - move_xy[0])) {
+                                        legal = 1;
+                                    } else {
+                                        legal = 0;
+                                    }
                                 } else {
                                     legal = 0;
                                 }
@@ -600,7 +604,11 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                                     int direction_y_move = (attack_arr[1] - move_xy[1]) / abs(attack_arr[1] - move_xy[1]);
                                     int direction_y_king = (attack_arr[1] - king[1]) / abs(attack_arr[1] - king[1]);
                                     if(direction_x_king == direction_x_move && direction_y_king == direction_y_move) {
-                                        legal = 1;
+                                        if(abs(attack_arr[1] - move_xy[1]) == abs(attack_arr[0] - move_xy[0])) {
+                                            legal = 1;
+                                        } else {
+                                            legal = 0;
+                                        }
                                     } else {
                                         legal = 0;
                                     }
