@@ -124,6 +124,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                             wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                         }
                     } else {
+                        if(king != NULL) {
+                            if(king[0] == column && king[1] == row) {
+                                wprintw(win, "| ");
+                                wattron(win, COLOR_PAIR(theme[1]));
+                                wprintw(win, "%lc ", show_piece(row, column, style, obj));
+                                wattroff(win, COLOR_PAIR(theme[1]));
+                                continue;
+                            }
+                        } 
                         wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 }
@@ -207,6 +216,15 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
                             wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                         }
                     } else {
+                        if(king != NULL) {
+                            if(king[0] == column && king[1] == row) {
+                                wprintw(win, "| ");
+                                wattron(win, COLOR_PAIR(theme[1]));
+                                wprintw(win, "%lc ", show_piece(row, column, style, obj));
+                                wattroff(win, COLOR_PAIR(theme[1]));
+                                continue;
+                            }
+                        } 
                         wprintw(win, "| %lc ", show_piece(row, column, style, obj));
                     }
                 }
@@ -228,7 +246,7 @@ void show_board(char* color, piece (*obj)[8][8], int** moves, int* last_move, in
     delwin(win);
 }
 
-int show_promotion(int *theme, piece (*obj)[8][8], char p_color, int column)
+int show_promotion(int *theme, piece (*obj)[8][8], char p_color, int column, char* color_direction)
 {
     int x, y;
     char knight_symbol, bishop_symbol, rook_symbol, queen_symbol;
@@ -239,44 +257,86 @@ int show_promotion(int *theme, piece (*obj)[8][8], char p_color, int column)
     rook_symbol = (p_color == 'w') ? 'R' : 'r';
     queen_symbol = (p_color == 'w') ? 'Q' : 'q';
 
-    if(p_color == 'w') {
-        WINDOW* win = newwin(7, 3, 8, (x / 2 - 18) + 4 + (column * 4));
-        keypad(win, TRUE);
-        mousemask(BUTTON1_CLICKED, NULL);
-        wattron(win, COLOR_PAIR(theme[1]));
+    if(color_direction[0] == 'W') {
+        if(p_color == 'w') {
+            WINDOW* win = newwin(7, 3, 8, (x / 2 - 18) + 4 + (column * 4));
+            keypad(win, TRUE);
+            mousemask(BUTTON1_CLICKED, NULL);
+            wattron(win, COLOR_PAIR(theme[1]));
 
-        mvwprintw(win, 0, 0, " %c", queen_symbol);
-        mvwprintw(win, 2, 0, " %c", rook_symbol);
-        mvwprintw(win, 4, 0, " %c", bishop_symbol);
-        mvwprintw(win, 6, 0, " %c", knight_symbol);
-        wrefresh(win);
+            mvwprintw(win, 0, 0, " %c", queen_symbol);
+            mvwprintw(win, 2, 0, " %c", rook_symbol);
+            mvwprintw(win, 4, 0, " %c", bishop_symbol);
+            mvwprintw(win, 6, 0, " %c", knight_symbol);
+            wrefresh(win);
 
-        int ch = wgetch(win);
-        MEVENT event;
-        if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
-            int option = (event.y / 2) - 3;
-            return option;
+            int ch = wgetch(win);
+            MEVENT event;
+            if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+                int option = (event.y / 2) - 3;
+                return option;
+            }
+            delwin(win);
+        } else {
+            WINDOW* win = newwin(7, 3, 16, (x / 2 - 18) + 32 - (column * 4));
+            keypad(win, TRUE);
+            mousemask(BUTTON1_CLICKED, NULL);
+            wattron(win, COLOR_PAIR(theme[1]));
+
+            mvwprintw(win, 0, 0, " %c", knight_symbol);
+            mvwprintw(win, 2, 0, " %c", bishop_symbol);
+            mvwprintw(win, 4, 0, " %c", rook_symbol);
+            mvwprintw(win, 6, 0, " %c", queen_symbol);
+            wrefresh(win);
+
+            int ch = wgetch(win);
+            MEVENT event;
+            if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+                int option = abs((event.y / 2) - 11) + 1;
+                return option;
+            }
+            delwin(win);
         }
-        delwin(win);
     } else {
-        WINDOW* win = newwin(7, 3, 16, (x / 2 - 18) + 4 + (column * 4));
-        keypad(win, TRUE);
-        mousemask(BUTTON1_CLICKED, NULL);
-        wattron(win, COLOR_PAIR(theme[1]));
+        if(p_color == 'w') {
+            WINDOW* win = newwin(7, 3, 16, (x / 2 - 18) + 32 - (column * 4));
+            keypad(win, TRUE);
+            mousemask(BUTTON1_CLICKED, NULL);
+            wattron(win, COLOR_PAIR(theme[1]));
 
-        mvwprintw(win, 0, 0, " %c", knight_symbol);
-        mvwprintw(win, 2, 0, " %c", bishop_symbol);
-        mvwprintw(win, 4, 0, " %c", rook_symbol);
-        mvwprintw(win, 6, 0, " %c", queen_symbol);
-        wrefresh(win);
+            mvwprintw(win, 0, 0, " %c", knight_symbol);
+            mvwprintw(win, 2, 0, " %c", bishop_symbol);
+            mvwprintw(win, 4, 0, " %c", rook_symbol);
+            mvwprintw(win, 6, 0, " %c", queen_symbol);
+            wrefresh(win);
 
-        int ch = wgetch(win);
-        MEVENT event;
-        if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
-            int option = abs((event.y / 2) - 11) + 1;
-            return option;
+            int ch = wgetch(win);
+            MEVENT event;
+            if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+                int option = abs((event.y / 2) - 11) + 1;
+                return option;
+            }
+            delwin(win);
+        } else {
+            WINDOW* win = newwin(7, 3, 8, (x / 2 - 18) + 4 + (column * 4));
+            keypad(win, TRUE);
+            mousemask(BUTTON1_CLICKED, NULL);
+            wattron(win, COLOR_PAIR(theme[1]));
+
+            mvwprintw(win, 0, 0, " %c", queen_symbol);
+            mvwprintw(win, 2, 0, " %c", rook_symbol);
+            mvwprintw(win, 4, 0, " %c", bishop_symbol);
+            mvwprintw(win, 6, 0, " %c", knight_symbol);
+            wrefresh(win);
+
+            int ch = wgetch(win);
+            MEVENT event;
+            if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+                int option = (event.y / 2) - 3;
+                return option;
+            }
+            delwin(win);
         }
-        delwin(win);
     }
     return 0;
 }

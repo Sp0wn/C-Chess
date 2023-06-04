@@ -136,6 +136,7 @@ int main()
                 int **moves_w, **moves_b;
                 int wm_done, bm_done;
                 int row, column;
+                int p_w, p_b;
                 int xy_temp[2];
 
                 move_1w = move_2w = move_1b = move_2b = NULL;
@@ -195,6 +196,10 @@ int main()
                         move_2w = get_move(move_2w, config[2]);
                         wm_done = make_move(move_2w, move_1w, moves_w, b_ptr, reset_p, w_castle, w_king);
                     } while(move_2w == NULL || wm_done == 0);
+                    if(((*b_ptr)[move_2w[1]][move_2w[0]].name == 'P') && (move_2w[1] == 7)) {
+                        p_w = show_promotion(theme, b_ptr, 'w', move_2w[0], config[2]);
+                        make_promotion(p_w, move_2w, b_ptr, 'w');
+                    }
                     if (Clock_struct.end == 1) break;
 
                     show_board(config[2], b_ptr, NULL, move_2w, theme, NULL, ' ', config[3]);
@@ -229,7 +234,7 @@ int main()
                         sleep(5);
                         endwin();
                         exit(0);
-                    } else if((attack_b != NULL)) {
+                    } else if(attack_b != NULL) {
                         show_board(config[2], b_ptr, NULL, NULL, theme, b_king, ' ', config[3]);
                     }
                     if (Clock_struct.end == 1) break;
@@ -251,6 +256,10 @@ int main()
                         move_2b = get_move(move_2b, config[2]);
                         bm_done = make_move(move_2b, move_1b, moves_b, b_ptr, reset_p, b_castle, b_king);
                     } while(move_2b == NULL || bm_done == 0);
+                    if(((*b_ptr)[move_2b[1]][move_2b[0]].name == 'p') && (move_2b[1] == 0)) {
+                        p_b = show_promotion(theme, b_ptr, 'b', move_2w[0], config[2]);
+                        make_promotion(p_b, move_2b, b_ptr, 'b');
+                    }
                     if (Clock_struct.end == 1) break;
 
                     show_board(config[2], b_ptr, NULL, move_2b, theme, NULL, ' ', config[3]);
