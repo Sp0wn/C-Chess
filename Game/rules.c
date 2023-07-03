@@ -1,6 +1,7 @@
 #include "rules.h"
 
 #include "../Game/piece.h"
+#include "../UI/Board.h"
 
 #include <curses.h>
 #include <ncurses.h>
@@ -82,7 +83,7 @@ int bishop_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
                 y_diff = (diff - 1) * ((move_xy[1] - origin_xy[1]) / abs(move_xy[1] - origin_xy[1]));
                 //Bishop can't go across pieces
                 if((*obj)[move_xy[1] - y_diff][move_xy[0] - x_diff].name != ' ' && (*obj)[move_xy[1] - y_diff][move_xy[0] - x_diff].name == king_symbol) {
-                    continue;
+                    return 0;
                 } else if((*obj)[move_xy[1] - y_diff][move_xy[0] - x_diff].name != ' ' && (*obj)[move_xy[1] - y_diff][move_xy[0] - x_diff].name != king_symbol) {
                     return 0;
                 }
@@ -109,7 +110,7 @@ int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
             for(diff = abs(origin_xy[0] - move_xy[0]); diff > 1; diff--) {
                 real_diff = (diff - 1) * ((move_xy[0] - origin_xy[0]) / abs(move_xy[0] - origin_xy[0]));
                 if((*obj)[move_xy[1]][move_xy[0] - real_diff].name != ' ' && (*obj)[move_xy[1]][move_xy[0] - real_diff].name == king_symbol) {
-                    continue;
+                    return 0;
                 } else if((*obj)[move_xy[1]][move_xy[0] - real_diff].name != ' ' && (*obj)[move_xy[1]][move_xy[0] - real_diff].name != king_symbol) {
                     return 0;
                 }
@@ -120,7 +121,7 @@ int rook_move(int *origin_xy, int *move_xy, char p_color, piece (*obj)[8][8])
             for(diff = abs(origin_xy[1] - move_xy[1]); diff > 1; diff--) {
                 real_diff = (diff - 1) * ((move_xy[1] - origin_xy[1]) / abs(move_xy[1] - origin_xy[1]));
                 if((*obj)[move_xy[1] - real_diff][move_xy[0]].name != ' ' && (*obj)[move_xy[1] - real_diff][move_xy[0]].name == king_symbol) {
-                    continue;
+                    return 0;
                 } else if((*obj)[move_xy[1] - real_diff][move_xy[0]].name != ' ' && (*obj)[move_xy[1] - real_diff][move_xy[0]].name != king_symbol) {
                     return 0;
                 }
@@ -220,7 +221,7 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
             //Trace if any piece in between the king and the origin
             for(diff = abs(origin_xy[0] - king_xy[0]); diff > 1; diff--) {
                 real_diff = (diff - 1) * ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
-                if((*obj)[origin_xy[1]][origin_xy[0] - real_diff].name != ' ') {
+                if((*obj)[origin_xy[1]][origin_xy[0] + real_diff].name != ' ') {
                     return 0;
                 }
             }
@@ -250,7 +251,7 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
             }
             for(diff = abs(origin_xy[1] - king_xy[1]); diff > 1; diff--) {
                 real_diff = (diff - 1) * ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
-                if((*obj)[origin_xy[1] - real_diff][origin_xy[0]].name != ' ') {
+                if((*obj)[origin_xy[1] + real_diff][origin_xy[0]].name != ' ') {
                     return 0;
                 }
             }
@@ -277,7 +278,7 @@ int piece_pinned(int *origin_xy, char line, char p_color, piece (*obj)[8][8])
             for(diff = abs(origin_xy[0] - king_xy[0]); diff > 1; diff--) {
                 x_diff = (diff - 1) * ((king_xy[0] - origin_xy[0]) / abs(king_xy[0] - origin_xy[0]));
                 y_diff = (diff - 1) * ((king_xy[1] - origin_xy[1]) / abs(king_xy[1] - origin_xy[1]));
-                if((*obj)[origin_xy[1] - y_diff][origin_xy[0] - x_diff].name != ' ') {
+                if((*obj)[origin_xy[1] + y_diff][origin_xy[0] + x_diff].name != ' ') {
                     return 0;
                 }
             }
@@ -332,6 +333,12 @@ int** square_attacked(int *origin_xy, char p_color, int** old_arr, piece (*obj)[
     if(p_color == 'w') {
         pawn_left = (*obj)[origin_xy[1] + 1][origin_xy[0] - 1].name == 'p';
         pawn_right = (*obj)[origin_xy[1] + 1][origin_xy[0] + 1].name == 'p';
+        if(origin_xy[0] == 0) {
+            pawn_left = 0;
+        }
+        if(origin_xy[0] == 7) {
+            pawn_right = 0;
+        }
         if(pawn_left) {
             attack = malloc(2 * sizeof(int));
             attack[0] = origin_xy[0] - 1;
@@ -351,6 +358,12 @@ int** square_attacked(int *origin_xy, char p_color, int** old_arr, piece (*obj)[
     } else {
         pawn_left = (*obj)[origin_xy[1] - 1][origin_xy[0] - 1].name == 'P';
         pawn_right = (*obj)[origin_xy[1] - 1][origin_xy[0] + 1].name == 'P';
+        if(origin_xy[0] == 0) {
+            pawn_left = 0;
+        }
+        if(origin_xy[0] == 7) {
+            pawn_right = 0;
+        }
         if(pawn_left) {
             attack = malloc(2 * sizeof(int));
             attack[0] = origin_xy[0] - 1;
@@ -422,13 +435,19 @@ int** square_attacked(int *origin_xy, char p_color, int** old_arr, piece (*obj)[
     }
 }
 
-int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle, int* king, int** old_arr)
+int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attackers, int* castle, int* king, int** old_arr, piece blank)
 {
     int row, column, n_moves, n_attacks, legal, old_n_moves;
     int h_pinned, v_pinned, d_pinned;
     int* move;
     int** moves;
     int move_xy[2];
+    int** attack_d;
+    int* xy_attack_d;
+    int n_attacks_d, attack_i;
+    int diagonal_ap, diagonal_ak;
+    int diagonal_move_a, diagonal_move_k;
+    char symbol_m, color_m;
 
     moves = NULL;
     n_moves = 0;
@@ -454,7 +473,7 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
     if(!(color == p_color)) {
         return NULL;
     }
-
+    
     //Search for possibilities around all the board
     for(row = 0; row < 8; row++) {
         for(column = 0; column < 8; column++) {
@@ -476,6 +495,42 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 legal = king_move(origin_xy, move_xy, p_color, obj, castle);
             }
 
+            //Check if the move made lefts the king in check
+            if(legal) {
+                symbol_m = (*obj)[move_xy[1]][move_xy[0]].name;
+                if(symbol_m == ' ') {
+                    color_m = ' ';
+                } else {
+                    color_m = (*obj)[move_xy[1]][move_xy[0]].color;
+                }
+                if((symbol == 'P' || symbol == 'p') && ((*obj)[move_xy[1]][move_xy[0]].name == ' ')) {
+                    if(color == 'w') {
+                        color_m = (*obj)[move_xy[1] - 1][move_xy[0]].color;
+                        (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
+                        (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
+                    } else {
+                        color_m = (*obj)[move_xy[1] + 1][move_xy[0]].color;
+                        (*obj)[move_xy[1] + 1][move_xy[0]] = blank;
+                        (*obj)[move_xy[1] + 1][move_xy[0]].name = ' ';
+                    }
+                }
+                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+                (*obj)[move_xy[1]][move_xy[0]].color = color;
+                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+                if((symbol == 'K') || (symbol == 'k')) {
+                    if(square_attacked(move_xy, color, NULL, obj) != NULL) {
+                        legal = 0;
+                    }
+                } else {
+                    if(square_attacked(king, color, NULL, obj) != NULL) {
+                        legal = 0;
+                    }   
+                }
+                undo_move(origin_xy, move_xy, obj, blank, symbol_m, color_m);
+            }
+            
+
             //Checks if any the piece is pinned in any axis
             h_pinned = piece_pinned(origin_xy, 'h', p_color, obj);
             v_pinned = piece_pinned(origin_xy, 'v', p_color, obj);
@@ -485,8 +540,26 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 legal = 0;
             } else if(v_pinned && move_xy[0] != origin_xy[0]) {
                 legal = 0;
-            } else if(d_pinned && (move_xy[0] - origin_xy[0] != move_xy[1] - origin_xy[1])) {
-                legal = 0;
+            } else if(d_pinned) {
+                attack_d = square_attacked(origin_xy, p_color, NULL, obj);
+                xy_attack_d = NULL;
+                n_attacks_d = (*(attack_d-1))[0];
+                for(attack_i = 0; attack_i < n_attacks_d; attack_i++) {
+                    xy_attack_d = attack_d[attack_i];
+                    diagonal_ap = abs(xy_attack_d[0] - origin_xy[0]) == abs(xy_attack_d[1] - origin_xy[1]);
+                    diagonal_ak = abs(xy_attack_d[0] - king[0]) == abs(xy_attack_d[1] - king[1]);
+                    diagonal_move_a = abs(move_xy[0] - xy_attack_d[0]) == abs(move_xy[1] - xy_attack_d[1]);
+                    diagonal_move_k = abs(move_xy[0] - king[0]) == abs(move_xy[1] - king[1]);
+                    if(diagonal_ak && diagonal_ap && diagonal_move_a && diagonal_move_k && legal) {
+                        legal = 1;
+                        free(attack_d[attack_i]);
+                        break;
+                    } else {
+                        legal = 0;
+                        free(attack_d[attack_i]);
+                    }
+                }
+                free(attack_d-1);
             }
 
             if(n_attacks > 1 && !(symbol == 'K' || symbol == 'k')) {

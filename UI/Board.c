@@ -551,6 +551,30 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     return 0;
 }
 
+void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, char origin_p, char origin_c)
+{
+    char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
+    char color = (*obj)[origin_xy[1]][origin_xy[0]].color;
+    (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+    (*obj)[move_xy[1]][move_xy[0]].color = color;
+    if(origin_p == ' ') {
+        (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+        (*obj)[origin_xy[1]][origin_xy[0]].name = origin_p;
+    } else {
+        (*obj)[origin_xy[1]][origin_xy[0]].name = origin_p;
+        (*obj)[origin_xy[1]][origin_xy[0]].color = origin_c;
+    }
+    if((symbol == 'P' || symbol == 'p') && (origin_p == ' ') && (origin_xy[0] != move_xy[0])) {
+        if(color == 'w') {
+            (*obj)[origin_xy[1] - 1][origin_xy[0]].name = 'p';
+            (*obj)[origin_xy[1] - 1][origin_xy[0]].color = 'b';
+        } else {
+            (*obj)[origin_xy[1] - 1][origin_xy[0]].name = 'P';
+            (*obj)[origin_xy[1] - 1][origin_xy[0]].color = 'w';
+        }
+    }
+}
+
 int make_promotion(int option, int *origin_xy, piece (*obj)[8][8], char p_color)
 {
     char knight_symbol, bishop_symbol, rook_symbol, queen_symbol;

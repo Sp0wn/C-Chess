@@ -10,6 +10,7 @@ int show_piece(int row, int column, char* style, piece (*obj)[8][8]);
 
 int* get_move(int* old_xy, char* color);
 int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8], piece blank, int* castle, int* king);
+void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, char origin_p, char origin_c);
 int make_promotion(int option, int* origin_xy, piece (*obj)[8][8], char p_color);
 
 #endif
