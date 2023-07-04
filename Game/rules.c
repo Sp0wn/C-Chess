@@ -495,15 +495,19 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 legal = king_move(origin_xy, move_xy, p_color, obj, castle);
             }
 
+            if(legal == 0) {
+                continue;
+            }
+
             //Check if the move made lefts the king in check
-            if(legal) {
+            if(legal == 1) {
                 symbol_m = (*obj)[move_xy[1]][move_xy[0]].name;
                 if(symbol_m == ' ') {
                     color_m = ' ';
                 } else {
                     color_m = (*obj)[move_xy[1]][move_xy[0]].color;
                 }
-                if((symbol == 'P' || symbol == 'p') && ((*obj)[move_xy[1]][move_xy[0]].name == ' ')) {
+                if((symbol == 'P' || symbol == 'p') && ((*obj)[move_xy[1]][move_xy[0]].name == ' ' && ((*obj)[move_xy[1]][move_xy[0]].enpassant == 1))) {
                     if(color == 'w') {
                         color_m = (*obj)[move_xy[1] - 1][move_xy[0]].color;
                         (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
@@ -528,8 +532,10 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                     }   
                 }
                 undo_move(origin_xy, move_xy, obj, blank, symbol_m, color_m);
+                if(legal == 0) {
+                    continue;
+                }
             }
-            
 
             //Checks if any the piece is pinned in any axis
             h_pinned = piece_pinned(origin_xy, 'h', p_color, obj);
