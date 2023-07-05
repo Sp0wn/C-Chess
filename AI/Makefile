@@ -1,8 +1,8 @@
 
 ##VAR
 CC = clang
-FILES = engine.c
-BINS = engine.o
+FILES = engine.c eval.c
+BINS = engine.o eval.o
 
 all: mainapp
 

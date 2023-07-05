@@ -4,7 +4,7 @@ CC = clang
 FLAGS = -lncursesw
 UI = UI/IO.o UI/Board.o
 GAME = Game/set.o Game/rules.o
-AI = AI/engine.o
+AI = AI/engine.o AI/eval.o
 #ONLINE =
 
 all: mainapp

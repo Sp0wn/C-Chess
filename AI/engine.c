@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <math.h>
 
 void play_random(piece (*obj)[8][8], char player, int* king, int* castle, piece blank)
 {
@@ -132,4 +133,9 @@ int* fill_arr(int* old_arr, int size, int excluded)
     }
     free(old_arr);
     return new_arr;
+}
+
+int minimax(piece (*obj)[8][8], int depth, int is_max)
+{
+    return 0;
 }
