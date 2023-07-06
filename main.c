@@ -134,16 +134,6 @@ int main()
                 exit(0);
 
             case 1:
-                set_pieces(b_ptr);
-                endwin();
-                (*b_ptr)[0][3] = reset_p;
-                (*b_ptr)[0][3].name = ' ';
-                (*b_ptr)[7][0] = reset_p;
-                (*b_ptr)[7][0].name = ' ';
-                (*b_ptr)[7][7] = reset_p;
-                (*b_ptr)[7][7].name = ' ';
-                printf("%i\n", eval_material(b_ptr));
-                exit(0);
                 break;
 
             //PvP local
