@@ -133,7 +133,9 @@ int main()
                 endwin();
                 exit(0);
 
+            //PvP online
             case 1:
+                exit(0);
                 break;
 
             //PvP local

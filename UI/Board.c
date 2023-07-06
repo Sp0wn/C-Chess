@@ -551,27 +551,56 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     return 0;
 }
 
-void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, char origin_p, char origin_c)
+void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, int* new_castle, int* old_castle, int* king, int* enpassant, char old_p)
 {
-    char symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
-    char color = (*obj)[origin_xy[1]][origin_xy[0]].color;
+    char symbol, color;
+    symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
+    color = (*obj)[origin_xy[1]][origin_xy[0]].color;
+    
+    char old_c = (color == 'w') ? 'b' : 'w';
+
     (*obj)[move_xy[1]][move_xy[0]].name = symbol;
     (*obj)[move_xy[1]][move_xy[0]].color = color;
-    if(origin_p == ' ') {
+
+    new_castle[0] = old_castle[0];
+    new_castle[1] = old_castle[1];
+
+    if(old_p == ' ') {
         (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-        (*obj)[origin_xy[1]][origin_xy[0]].name = origin_p;
+        (*obj)[origin_xy[1]][origin_xy[0]].name = old_p;
     } else {
-        (*obj)[origin_xy[1]][origin_xy[0]].name = origin_p;
-        (*obj)[origin_xy[1]][origin_xy[0]].color = origin_c;
+        (*obj)[origin_xy[1]][origin_xy[0]].name = old_p;
+        (*obj)[origin_xy[1]][origin_xy[0]].color = old_c;
     }
-    if((symbol == 'P' || symbol == 'p') && (origin_p == ' ') && (origin_xy[0] != move_xy[0])) {
+    if((symbol == 'K' || symbol == 'k') && (abs(origin_xy[0] - move_xy[0])) == 2) {
+        king[0] = move_xy[0];
+        king[1] = move_xy[1];
+        int castle_direction = abs(origin_xy[0] - move_xy[0]) / origin_xy[0] - move_xy[0];
+        char rook_symbol = (color == 'w') ? 'R' : 'r';
+        if(castle_direction == 1) {
+            (*obj)[origin_xy[1]][7].name = rook_symbol;
+            (*obj)[origin_xy[1]][7].color = color;
+            (*obj)[origin_xy[1]][5] = blank;
+            (*obj)[origin_xy[1]][5].name = ' ';
+        } else {
+            (*obj)[origin_xy[1]][0].name = rook_symbol;
+            (*obj)[origin_xy[1]][0].color = color;
+            (*obj)[origin_xy[1]][3] = blank;
+            (*obj)[origin_xy[1]][3].name = ' ';
+        }
+    }
+    if((symbol == 'P' || symbol == 'p') && (old_p == ' ') && (origin_xy[0] != move_xy[0])) {
         if(color == 'w') {
             (*obj)[origin_xy[1] - 1][origin_xy[0]].name = 'p';
             (*obj)[origin_xy[1] - 1][origin_xy[0]].color = 'b';
         } else {
-            (*obj)[origin_xy[1] - 1][origin_xy[0]].name = 'P';
-            (*obj)[origin_xy[1] - 1][origin_xy[0]].color = 'w';
+            (*obj)[origin_xy[1] + 1][origin_xy[0]].name = 'P';
+            (*obj)[origin_xy[1] + 1][origin_xy[0]].color = 'w';
         }
+    }
+    set_enpassant(obj);
+    if(enpassant != NULL) {
+        (*obj)[enpassant[1]][enpassant[0]].enpassant = 1;
     }
 }
 
@@ -602,3 +631,19 @@ int make_promotion(int option, int *origin_xy, piece (*obj)[8][8], char p_color)
     return 1;
 }
 
+int* search_enpassant(piece (*obj)[8][8])
+{
+    int row, col;
+    int* xy = malloc(2 * sizeof(int));
+    for(row = 0;row < 8; row++) {
+        for(col = 0; col < 8; col++) {
+            if((*obj)[row][col].enpassant == 1) {
+                xy[0] = col;
+                xy[1] = row;
+                return xy;
+            }
+        }
+    } 
+    free(xy);
+    return NULL;
+}

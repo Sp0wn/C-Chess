@@ -121,7 +121,6 @@ int check_checkmate(piece (*obj)[8][8], char color, piece blank, int* castle)
             free(attack_k[pa]);
         }
         free(attack_k-1);
- 
     }
     if(moves != NULL) {
         int pm, n_moves;

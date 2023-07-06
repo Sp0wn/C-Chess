@@ -440,14 +440,20 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
     int row, column, n_moves, n_attacks, legal, old_n_moves;
     int h_pinned, v_pinned, d_pinned;
     int* move;
+    int* enpassant_xy;
     int** moves;
     int move_xy[2];
+    int original_castle[2];
     int** attack_d;
     int* xy_attack_d;
     int n_attacks_d, attack_i;
     int diagonal_ap, diagonal_ak;
     int diagonal_move_a, diagonal_move_k;
     char symbol_m, color_m;
+    char old_p;
+    int** moves_temp;
+    int size_temp;
+    int* p_size;
 
     moves = NULL;
     n_moves = 0;
@@ -501,27 +507,19 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
 
             //Check if the move made lefts the king in check
             if(legal == 1) {
-                symbol_m = (*obj)[move_xy[1]][move_xy[0]].name;
-                if(symbol_m == ' ') {
-                    color_m = ' ';
-                } else {
-                    color_m = (*obj)[move_xy[1]][move_xy[0]].color;
-                }
-                if((symbol == 'P' || symbol == 'p') && ((*obj)[move_xy[1]][move_xy[0]].name == ' ' && ((*obj)[move_xy[1]][move_xy[0]].enpassant == 1))) {
-                    if(color == 'w') {
-                        color_m = (*obj)[move_xy[1] - 1][move_xy[0]].color;
-                        (*obj)[move_xy[1] - 1][move_xy[0]] = blank;
-                        (*obj)[move_xy[1] - 1][move_xy[0]].name = ' ';
-                    } else {
-                        color_m = (*obj)[move_xy[1] + 1][move_xy[0]].color;
-                        (*obj)[move_xy[1] + 1][move_xy[0]] = blank;
-                        (*obj)[move_xy[1] + 1][move_xy[0]].name = ' ';
-                    }
-                }
-                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
-                (*obj)[move_xy[1]][move_xy[0]].color = color;
-                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+                original_castle[0] = castle[0];
+                original_castle[1] = castle[1];
+                enpassant_xy = search_enpassant(obj);
+
+                moves_temp = malloc(2 * sizeof(int*));
+                size_temp = 1;
+                p_size = &size_temp;
+                moves_temp[0] = p_size;
+                moves_temp[1] = move_xy;
+
+                old_p = (*obj)[move_xy[1]][move_xy[0]].name;
+
+                make_move(move_xy, origin_xy, moves_temp+1, obj, blank, castle, king);
                 if((symbol == 'K') || (symbol == 'k')) {
                     if(square_attacked(move_xy, color, NULL, obj) != NULL) {
                         legal = 0;
@@ -531,7 +529,11 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                         legal = 0;
                     }   
                 }
-                undo_move(origin_xy, move_xy, obj, blank, symbol_m, color_m);
+                undo_move(origin_xy, move_xy, obj, blank, castle, original_castle, king, enpassant_xy, old_p);
+                if(enpassant_xy != NULL) {
+                    free(enpassant_xy);
+                }
+                free(moves_temp);
                 if(legal == 0) {
                     continue;
                 }
