@@ -491,6 +491,10 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     while(n_moves > 0) {
         legal_array = legal_moves[n_moves - 1];
         if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
+            if((move_xy[0] == 4) && (move_xy[1] == 0) && !(symbol == 'Q' || symbol == 'K')) {
+                //printf("%c %c\n", symbol, color);
+                //sleep(3);
+            }
             //Resets square of en passant
             if((symbol == 'P' || symbol == 'p') && (*obj)[move_xy[1]][move_xy[0]].name == ' ') {
                 if(color == 'w') {
@@ -503,13 +507,19 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
             }
             //Sets castle privilege
             if(symbol == 'K' || symbol == 'k') {
+                /*sleep(2);
+                for(int row = 0; row < 8; row++) {
+                    for(int col = 0; col < 8; col++) {
+                        printf("%c ", (*obj)[row][col].name);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n");
+                sleep(2);*/
+ 
                 castle[0] = 0;
                 castle[1] = 0;
                 
-                //Sets new king position
-                king[0] = move_xy[0];
-                king[1] = move_xy[1];
-
                 //Short castle
                 if(move_xy[0] - origin_xy[0] == 2) {
                     //Resets rook square and moves rook
@@ -538,12 +548,31 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
             if((symbol == 'P' || symbol == 'p') && abs(move_xy[1] - origin_xy[1]) == 2) {
                 (*obj)[move_xy[1]][move_xy[0]].enpassant = 1;
             }
-            //Moves the struct
-            (*obj)[move_xy[1]][move_xy[0]].name = symbol;
-            (*obj)[move_xy[1]][move_xy[0]].color = color;
-            //Resets origin square
-            (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-            (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+            if(symbol == 'K' || symbol == 'k') {
+                //printf("AAAAAAAA\n\n");
+                //Sets new king position
+                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+                (*obj)[move_xy[1]][move_xy[0]].color = color;
+                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+                king[0] = move_xy[0];
+                king[1] = move_xy[1];
+ 
+                /*for(int row = 0; row < 8; row++) {
+                    for(int col = 0; col < 8; col++) {
+                        printf("%c ", (*obj)[row][col].name);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n");
+                sleep(5);*/
+ 
+            } else {
+                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+                (*obj)[move_xy[1]][move_xy[0]].color = color;
+                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
+            }
             return 1;
         } 
         n_moves--; 
@@ -551,14 +580,16 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     return 0;
 }
 
-void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, int* new_castle, int* old_castle, int* king, int* enpassant, char old_p)
+void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, int* new_castle, int* old_castle, int* king, int* enpassant, char old_p, char old_c)
 {
     char symbol, color;
     symbol = (*obj)[origin_xy[1]][origin_xy[0]].name;
     color = (*obj)[origin_xy[1]][origin_xy[0]].color;
-    
-    char old_c = (color == 'w') ? 'b' : 'w';
 
+    if(symbol == 'K' || symbol == 'k') {
+        king[0] = move_xy[0];
+        king[1] = move_xy[1];
+    }
     (*obj)[move_xy[1]][move_xy[0]].name = symbol;
     (*obj)[move_xy[1]][move_xy[0]].color = color;
 
@@ -572,21 +603,21 @@ void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, in
         (*obj)[origin_xy[1]][origin_xy[0]].name = old_p;
         (*obj)[origin_xy[1]][origin_xy[0]].color = old_c;
     }
-    if((symbol == 'K' || symbol == 'k') && (abs(origin_xy[0] - move_xy[0])) == 2) {
-        king[0] = move_xy[0];
-        king[1] = move_xy[1];
-        int castle_direction = abs(origin_xy[0] - move_xy[0]) / origin_xy[0] - move_xy[0];
-        char rook_symbol = (color == 'w') ? 'R' : 'r';
-        if(castle_direction == 1) {
-            (*obj)[origin_xy[1]][7].name = rook_symbol;
-            (*obj)[origin_xy[1]][7].color = color;
-            (*obj)[origin_xy[1]][5] = blank;
-            (*obj)[origin_xy[1]][5].name = ' ';
-        } else {
-            (*obj)[origin_xy[1]][0].name = rook_symbol;
-            (*obj)[origin_xy[1]][0].color = color;
-            (*obj)[origin_xy[1]][3] = blank;
-            (*obj)[origin_xy[1]][3].name = ' ';
+    if(symbol == 'K' || symbol == 'k') {
+        if((abs(origin_xy[0] - move_xy[0])) == 2) {
+            int castle_direction = (origin_xy[0] - move_xy[0]) / abs(origin_xy[0] - move_xy[0]);
+            char rook_symbol = (color == 'w') ? 'R' : 'r';
+            if(castle_direction == 1) {
+                (*obj)[origin_xy[1]][7].name = rook_symbol;
+                (*obj)[origin_xy[1]][7].color = color;
+                (*obj)[origin_xy[1]][5] = blank;
+                (*obj)[origin_xy[1]][5].name = ' ';
+            } else {
+                (*obj)[origin_xy[1]][0].name = rook_symbol;
+                (*obj)[origin_xy[1]][0].color = color;
+                (*obj)[origin_xy[1]][3] = blank;
+                (*obj)[origin_xy[1]][3].name = ' ';
+            }
         }
     }
     if((symbol == 'P' || symbol == 'p') && (old_p == ' ') && (origin_xy[0] != move_xy[0])) {
@@ -601,6 +632,15 @@ void undo_move(int* move_xy, int* origin_xy, piece (*obj)[8][8], piece blank, in
     set_enpassant(obj);
     if(enpassant != NULL) {
         (*obj)[enpassant[1]][enpassant[0]].enpassant = 1;
+    }
+}
+
+void undo_promotion(piece (*obj)[8][8], char p_color, int *origin_xy)
+{
+    if(p_color == 'w') {
+        (*obj)[origin_xy[1]][origin_xy[0]].name = 'P';
+    } else {
+        (*obj)[origin_xy[1]][origin_xy[0]].name = 'p';
     }
 }
 

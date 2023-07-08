@@ -36,8 +36,14 @@ int pawn_move(int* origin_xy, int* move_xy, char p_color, piece (*obj)[8][8])
             } else {
                 //Pawn can move 2 squares if it hasn't move
                 if(abs(move_xy[1] - origin_xy[1]) == 2 && origin_xy[1] == 1) {
+                    if((*obj)[move_xy[1] - 1][move_xy[0]].name != ' ') {
+                        return 0;
+                    }
                     return 1;
                 } else if(abs(move_xy[1] - origin_xy[1]) == 2 && origin_xy[1] == 6) {
+                    if((*obj)[move_xy[1] + 1][move_xy[0]].name != ' ') {
+                        return 0;
+                    }
                     return 1;
                 } else if(abs(move_xy[1] - origin_xy[1]) == 2) {
                     return 0;
@@ -450,7 +456,7 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
     int diagonal_ap, diagonal_ak;
     int diagonal_move_a, diagonal_move_k;
     char symbol_m, color_m;
-    char old_p;
+    char old_p, old_c;
     int** moves_temp;
     int size_temp;
     int* p_size;
@@ -505,8 +511,13 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 continue;
             }
 
+            if((move_xy[0] == king[0]) && (move_xy[1] == king[1])) {
+                continue;
+            }
+
             //Check if the move made lefts the king in check
             if(legal == 1) {
+            //if(1 == 0) {
                 original_castle[0] = castle[0];
                 original_castle[1] = castle[1];
                 enpassant_xy = search_enpassant(obj);
@@ -518,18 +529,64 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                 moves_temp[1] = move_xy;
 
                 old_p = (*obj)[move_xy[1]][move_xy[0]].name;
+                old_c = (*obj)[move_xy[1]][move_xy[0]].color;
 
+                //if((move_xy[0] == 5) && (move_xy[1] == 1) && (symbol == 'K' || symbol == 'k')) {
+                    //printf("legal s:%c\n", symbol);
+                    //printf("legal c:%c\n", color);
+                    //exit(0);
+                //}
+                //if(symbol == 'K' || symbol == 'k') {
+                    //printf("%i %i %i\n", move_xy[0], move_xy[1], legal);
+                //}
+                /*for(int arow = 0; arow < 8; arow++) {
+                    for(int acol = 0; acol < 8; acol++) {
+                        printf("%c ", (*obj)[arow][acol].name);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n");*/
+ 
                 make_move(move_xy, origin_xy, moves_temp+1, obj, blank, castle, king);
-                if((symbol == 'K') || (symbol == 'k')) {
-                    if(square_attacked(move_xy, color, NULL, obj) != NULL) {
+                /*for(int arow = 0; arow < 8; arow++) {
+                    for(int acol = 0; acol < 8; acol++) {
+                        printf("%c ", (*obj)[arow][acol].name);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n");*/
+ 
+                /*if((symbol == 'K') || (symbol == 'k')) {
+                    if(square_attacked(king, color, NULL, obj) != NULL) {
                         legal = 0;
                     }
+                    //printf("Yes\n");
+                    //printf("%i %i %i\n", move_xy[0], move_xy[1], legal);
                 } else {
                     if(square_attacked(king, color, NULL, obj) != NULL) {
                         legal = 0;
                     }   
+                }*/
+                if(square_attacked(king, p_color, NULL, obj) != NULL) {
+                    legal = 0;
                 }
-                undo_move(origin_xy, move_xy, obj, blank, castle, original_castle, king, enpassant_xy, old_p);
+                undo_move(origin_xy, move_xy, obj, blank, castle, original_castle, king, enpassant_xy, old_p, old_c);
+                /*for(int arow = 0; arow < 8; arow++) {
+                    for(int acol = 0; acol < 8; acol++) {
+                        printf("%c ", (*obj)[arow][acol].name);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n");*/
+ 
+                /*if((*obj)[origin_xy[1]][origin_xy[0]].name == 'P') {
+                    if((*obj)[origin_xy[1]][origin_xy[0]].color == 'b') {
+                        printf("Fuck!\n");
+                        printf("X1: %i, Y1: %i\n", origin_xy[0], origin_xy[1]);
+                        printf("X2: %i, Y2: %i\n", move_xy[0], move_xy[1]);
+                        sleep(2);
+                    }
+                }*/
                 if(enpassant_xy != NULL) {
                     free(enpassant_xy);
                 }
@@ -697,6 +754,14 @@ int** legal_moves(int* origin_xy, piece (*obj)[8][8], char p_color, int** attack
                                     legal = 0;
                                 }
                             } 
+                        }
+                    } else {
+                        legal = 0;
+                    }
+                } else {
+                    if(square_attacked(move_xy, p_color, NULL, obj) == NULL) {
+                        if(legal == 1) {
+                            legal = 1;
                         }
                     } else {
                         legal = 0;

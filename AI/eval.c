@@ -5,7 +5,7 @@
 #include "../Game/piece.h"
 #include "../Game/rules.h"
 
-int eval_material(piece (*obj)[8][8])
+int eval_material(piece (*obj)[8][8], char color)
 {
     int row, col, eval;
     char symbol;
@@ -57,7 +57,8 @@ int eval_material(piece (*obj)[8][8])
         }
     }
 
-    return eval;
+    int perspective = (color == 'w') ? 1 : -1;
+    return eval * perspective;
 }
 
 int check_checkmate(piece (*obj)[8][8], char color, piece blank, int* castle)
@@ -88,7 +89,7 @@ int check_checkmate(piece (*obj)[8][8], char color, piece blank, int* castle)
             xy_temp[0] = col;
             xy_temp[1] = row;
             if((*obj)[row][col].color == color && ((*obj)[row][col].name == 'K') || (*obj)[row][col].name == 'k') {
-                moves = legal_moves(king_xy, obj, color, attack_k, castle, king_xy, moves, blank);
+                moves = legal_moves(xy_temp, obj, color, attack_k, castle, king_xy, moves, blank);
             } else if((*obj)[row][col].color == color) {
                 moves = legal_moves(xy_temp, obj, color, attack_k, castle, king_xy, moves, blank);
             } else {
@@ -133,3 +134,4 @@ int check_checkmate(piece (*obj)[8][8], char color, piece blank, int* castle)
  
     return checkmate;
 }
+

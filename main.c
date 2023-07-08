@@ -132,9 +132,37 @@ int main()
                 run = 0;
                 endwin();
                 exit(0);
+                break;
 
             //PvP online
             case 1:
+                set_pieces(b_ptr);
+                int deptht[2];
+                //int n_moves;
+                deptht[0] = deptht[1] = 8;
+                //int origin_xy[] = {4,0};
+                //int test[] = {1,7};
+                //(*b_ptr)[origin_xy[1]][origin_xy[0]].name = 'B';
+                //(*b_ptr)[1][5].name = 'b';
+                //(*b_ptr)[1][5].color = 'b';
+                //(*b_ptr)[origin_xy[1]][origin_xy[0]].color = 'w';
+                //show_logo(theme, 0);
+                endwin();
+                float test = minimax(b_ptr, deptht, 1, -1000.0, 1000.0, reset_p, w_castle, b_castle, 'w');
+                //int **b = square_attacked(w_king, 'w', NULL, b_ptr);
+                //int** a = legal_moves(origin_xy, b_ptr, 'w', b, w_castle, w_king, NULL, reset_p);
+                //if(a != NULL) {
+                //    n_moves = (*(a-1))[0];
+                    //printf("Can! %i %i,%i\n", n_moves, a[0][0], a[0][1]);
+                    //printf("Can! %i %i,%i\n", n_moves, a[1][0], a[1][1]);
+                //}
+                //if(b != NULL) {
+                    //exit(0);
+                //}
+                printf("%f\n", test);
+                //show_board(config[2], b_ptr, a, NULL, theme, NULL, ' ', config[3]);
+                //sleep(3);
+                //endwin();
                 exit(0);
                 break;
 
@@ -157,7 +185,7 @@ int main()
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'w' && (*b_ptr)[row][column].name == 'K') {
-                                moves_w = legal_moves(w_king, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
+                                moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
                             } else if((*b_ptr)[row][column].color == 'w') {
                                 moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
                             } else {
@@ -228,7 +256,7 @@ int main()
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'b' && (*b_ptr)[row][column].color == 'k') {
-                                moves_b = legal_moves(b_king, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
+                                moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
                             } else if((*b_ptr)[row][column].color == 'b') {
                                 moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
                             } else {
@@ -294,6 +322,8 @@ int main()
             //PvC
             case 3:
                 show_logo(theme, 0);
+                int depth[2];
+                depth[0] = depth[1] = 3;
 
                 //Initial screens
                 set_time(&Clock_struct, theme);
@@ -310,7 +340,7 @@ int main()
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'w' && (*b_ptr)[row][column].name == 'K') {
-                                moves_w = legal_moves(w_king, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
+                                moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
                             } else if((*b_ptr)[row][column].color == 'w') {
                                 moves_w = legal_moves(xy_temp, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
                             } else {
@@ -351,7 +381,8 @@ int main()
                             moves_w = legal_moves(move_1w, b_ptr, 'w', attack_w, w_castle, w_king, moves_w, reset_p);
                         } while(move_1w == NULL || moves_w == NULL);
                     } else {
-                        play_random(b_ptr, 'w', w_king, w_castle, reset_p);
+                        //play_random(b_ptr, 'w', w_king, w_castle, reset_p);
+                        play_engine(b_ptr, 'w', w_king, w_castle, b_castle, reset_p, depth);
                     }
                     if (Clock_struct.end == 1) break;
 
@@ -387,7 +418,7 @@ int main()
                             xy_temp[0] = column;
                             xy_temp[1] = row;
                             if((*b_ptr)[row][column].color == 'b' && (*b_ptr)[row][column].color == 'k') {
-                                moves_b = legal_moves(b_king, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
+                                moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
                             } else if((*b_ptr)[row][column].color == 'b') {
                                 moves_b = legal_moves(xy_temp, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
                             } else {
@@ -427,7 +458,8 @@ int main()
                             moves_b = legal_moves(move_1b, b_ptr, 'b', attack_b, b_castle, b_king, moves_b, reset_p);
                         } while(move_1b == NULL || moves_b == NULL);
                     } else {
-                        play_random(b_ptr, 'b', b_king, b_castle, reset_p);
+                        //play_random(b_ptr, 'b', b_king, b_castle, reset_p);
+                        play_engine(b_ptr, 'b', b_king, w_castle, b_castle, reset_p, depth);
                     }
                     if (Clock_struct.end == 1) break;
 
