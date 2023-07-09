@@ -491,10 +491,6 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
     while(n_moves > 0) {
         legal_array = legal_moves[n_moves - 1];
         if((move_xy[0] == legal_array[0]) && (move_xy[1] == legal_array[1])) {
-            if((move_xy[0] == 4) && (move_xy[1] == 0) && !(symbol == 'Q' || symbol == 'K')) {
-                //printf("%c %c\n", symbol, color);
-                //sleep(3);
-            }
             //Resets square of en passant
             if((symbol == 'P' || symbol == 'p') && (*obj)[move_xy[1]][move_xy[0]].name == ' ') {
                 if(color == 'w') {
@@ -507,16 +503,6 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
             }
             //Sets castle privilege
             if(symbol == 'K' || symbol == 'k') {
-                /*sleep(2);
-                for(int row = 0; row < 8; row++) {
-                    for(int col = 0; col < 8; col++) {
-                        printf("%c ", (*obj)[row][col].name);
-                    }
-                    printf("\n");
-                }
-                printf("\n\n");
-                sleep(2);*/
- 
                 castle[0] = 0;
                 castle[1] = 0;
                 
@@ -549,30 +535,13 @@ int make_move(int* move_xy, int* origin_xy, int** legal_moves, piece (*obj)[8][8
                 (*obj)[move_xy[1]][move_xy[0]].enpassant = 1;
             }
             if(symbol == 'K' || symbol == 'k') {
-                //printf("AAAAAAAA\n\n");
-                //Sets new king position
-                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
-                (*obj)[move_xy[1]][move_xy[0]].color = color;
-                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
                 king[0] = move_xy[0];
                 king[1] = move_xy[1];
- 
-                /*for(int row = 0; row < 8; row++) {
-                    for(int col = 0; col < 8; col++) {
-                        printf("%c ", (*obj)[row][col].name);
-                    }
-                    printf("\n");
-                }
-                printf("\n\n");
-                sleep(5);*/
- 
-            } else {
-                (*obj)[move_xy[1]][move_xy[0]].name = symbol;
-                (*obj)[move_xy[1]][move_xy[0]].color = color;
-                (*obj)[origin_xy[1]][origin_xy[0]] = blank;
-                (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
             }
+            (*obj)[move_xy[1]][move_xy[0]].name = symbol;
+            (*obj)[move_xy[1]][move_xy[0]].color = color;
+            (*obj)[origin_xy[1]][origin_xy[0]] = blank;
+            (*obj)[origin_xy[1]][origin_xy[0]].name = ' ';
             return 1;
         } 
         n_moves--; 

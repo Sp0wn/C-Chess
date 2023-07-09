@@ -139,7 +139,6 @@ int* fill_arr(int* old_arr, int size, int excluded)
 
 float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float beta, piece blank, int* castle_w, int* castle_b, char color)
 {
-    //TODO: Implement promotion in the simulation
     int **attack_s, **moves;
     int *enpassant_xy;
     int origin_xy[2], move_xy[2], king_xy[2], original_castle[2];
@@ -162,14 +161,6 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
             }
         }
     }
-
-    /*for(row = 0; row < 8; row++) {
-        for(col = 0; col < 8; col++) {
-            printf("%c ", (*obj)[row][col].name);
-        }
-        printf("\n");
-    }
-    printf("to play: %c ;depth of: %i\n\n", color, depth[0]);*/
 
     //Bias used in order to prevent
     //unwanted stalemate
@@ -217,26 +208,12 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                     origin_xy[0] = col;
                     origin_xy[1] = row;
                     //Checks if the selected piece can be moved
-                    /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                        printf("Really!1\n");
-                        printf("Color a: %c\n", color);
-                        printf("X1:%i, Y1:%i; X2:, Y2: ;val = , depth = %i\n", origin_xy[0], origin_xy[1],  depth[0]);
-                        sleep(5);
-                        exit(0);
-                    }*/     
                     attack_s = square_attacked(king_xy, color, attack_s, obj);
                     if(color == 'w') {
                         moves = legal_moves(origin_xy, obj, color, attack_s, castle_w, king_xy, moves, blank);
                     } else {
                         moves = legal_moves(origin_xy, obj, color, attack_s, castle_b, king_xy, moves, blank);
                     }
-                    /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                        printf("Really!2\n");
-                        printf("Color a: %c\n", color);
-                        printf("X1:%i, Y1:%i; X2:, Y2: ;val = , depth = %i\n", origin_xy[0], origin_xy[1],  depth[0]);
-                        sleep(5);
-                        exit(0);
-                    }*/     
                     if(moves != NULL) {
                         n_moves = (*(moves-1))[0];
                         //Loops through the legal moves
@@ -252,12 +229,6 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             enpassant_xy = search_enpassant(obj);
                             old_p = (*obj)[moves[moves_i][1]][moves[moves_i][0]].name;
                             old_c = (*obj)[moves[moves_i][1]][moves[moves_i][0]].color;
-                            /*if((*obj)[origin_xy[1]][origin_xy[0]].name == 'P') {
-                                if((moves[moves_i][0] == 4) && (moves[moves_i][1] == 0)) {
-                                    printf("Color a: %c\n", color);
-                                    sleep(2);
-                                }
-                            }*/
                             //Make the move and modify values to pass recursively
                             if(color == 'w') {
                                 make_move(moves[moves_i], origin_xy, moves, obj, blank, castle_w, king_xy);
@@ -267,7 +238,6 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             depth[0] = depth[0] - 1;
                             if(((*obj)[moves[moves_i][1]][moves[moves_i][0]].name == 'P') && (moves[moves_i][1] == 7)) {
                                 for(int option = 1; option < 5; option++) {
-                                    //exit(0);
                                     make_promotion(option, moves[moves_i], obj, color);
                                     new_color = (color == 'w') ? 'b' : 'w';
                                     new_value = minimax(obj, depth, 0, alpha, beta, blank, castle_w, castle_b, new_color);
@@ -280,7 +250,6 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                                 }
                             } else if(((*obj)[moves[moves_i][1]][moves[moves_i][0]].name == 'p') && (moves[moves_i][1] == 0)) {
                                 for(int option = 1; option < 5; option++) {
-                                    //exit(0);
                                     make_promotion(option, moves[moves_i], obj, color);
                                     new_color = (color == 'w') ? 'b' : 'w';
                                     new_value = minimax(obj, depth, 0, alpha, beta, blank, castle_w, castle_b, new_color);
@@ -303,18 +272,10 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             } else {
                                 undo_move(origin_xy, moves[moves_i], obj, blank, castle_b, original_castle, king_xy, enpassant_xy, old_p, old_c);
                             }
-                            /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                                printf("Really! %i\n", is_max);
-                                printf("Color a: %c\n", color);
-                                printf("X1:%i, Y1:%i; X2:%i, Y2:%i ;val = %f, depth = %i\n", origin_xy[0], origin_xy[1], moves[moves_i][0], moves[moves_i][1], new_value, depth[0]);
-                                sleep(5);
-                                exit(0);
-                            }*/     
                             if(enpassant_xy != NULL) {
                                 free(enpassant_xy);
                             }
                             depth[0] = depth[0] + 1;
-                            //printf("X1:%i, Y1:%i; X2:%i, Y2:%i ;val = %f, depth = %i\n", origin_xy[0], origin_xy[1], moves[moves_i][0], moves[moves_i][1], new_value, depth[0]);
                             if(beta <= alpha) {
                                 break;
                             }
@@ -337,26 +298,12 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                 if((*obj)[row][col].color == color) {
                     origin_xy[0] = col;
                     origin_xy[1] = row;
-                    /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                        printf("Really!1\n");
-                        printf("Color a: %c\n", color);
-                        printf("X1:%i, Y1:%i; X2:, Y2: ;val = , depth = %i\n", origin_xy[0], origin_xy[1],  depth[0]);
-                        sleep(5);
-                        exit(0);
-                    }*/
                     attack_s = square_attacked(king_xy, color, attack_s, obj);
                     if(color == 'w') {
                         moves = legal_moves(origin_xy, obj, color, attack_s, castle_w, king_xy, moves, blank);
                     } else {
                         moves = legal_moves(origin_xy, obj, color, attack_s, castle_b, king_xy, moves, blank);
                     }
-                    /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                        printf("Really2!\n");
-                        printf("Color a: %c\n", color);
-                        printf("X1:%i, Y1:%i; X2:, Y2: ;val = , depth = %i\n", origin_xy[0], origin_xy[1],  depth[0]);
-                        sleep(5);
-                        exit(0);
-                    }*/
                     if(moves != NULL) {
                         n_moves = (*(moves-1))[0];
                         for(moves_i = 0; moves_i < n_moves; moves_i++) {
@@ -370,12 +317,6 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             enpassant_xy = search_enpassant(obj);
                             old_p = (*obj)[moves[moves_i][1]][moves[moves_i][0]].name;
                             old_c = (*obj)[moves[moves_i][1]][moves[moves_i][0]].color;
-                            /*if((*obj)[origin_xy[1]][origin_xy[0]].name == 'P') {
-                                if((moves[moves_i][0] == 4) && (moves[moves_i][1] == 0)) {
-                                    printf("Color a: %c\n", color);
-                                    sleep(2);
-                                }
-                            }*/
                             if(color == 'w') {
                                 make_move(moves[moves_i], origin_xy, moves, obj, blank, castle_w, king_xy);
                             } else {
@@ -384,29 +325,27 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             depth[0] = depth[0] - 1;
                             if(((*obj)[moves[moves_i][1]][moves[moves_i][0]].name == 'P') && (moves[moves_i][1] == 7)) {
                                 for(int option = 1; option < 5; option++) {
-                                    //exit(0);
                                     make_promotion(option, moves[moves_i], obj, color);
                                     new_color = (color == 'w') ? 'b' : 'w';
                                     new_value = minimax(obj, depth, 1, alpha, beta, blank, castle_w, castle_b, new_color);
                                     value = fminf(value, new_value);
                                     beta = fminf(beta, value);
                                     undo_promotion(obj, color, moves[moves_i]);
-                                    //if(beta <= alpha) {
-                                    //    break;
-                                    //} 
+                                    if(beta <= alpha) {
+                                        break;
+                                    } 
                                 }
                             } else if(((*obj)[moves[moves_i][1]][moves[moves_i][0]].name == 'p') && (moves[moves_i][1] == 0)) {
                                 for(int option = 1; option < 5; option++) {
-                                    //exit(0);
                                     make_promotion(option, moves[moves_i], obj, color);
                                     new_color = (color == 'w') ? 'b' : 'w';
                                     new_value = minimax(obj, depth, 1, alpha, beta, blank, castle_w, castle_b, new_color);
                                     value = fminf(value, new_value);
                                     beta = fminf(beta, value);
                                     undo_promotion(obj, color, moves[moves_i]);
-                                    //if(beta <= alpha) {
-                                    //    break;
-                                    //} 
+                                    if(beta <= alpha) {
+                                        break;
+                                    } 
                                 }
                             } else {
                                 new_color = (color == 'w') ? 'b' : 'w';
@@ -419,18 +358,10 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
                             } else {
                                 undo_move(origin_xy, moves[moves_i], obj, blank, castle_b, original_castle, king_xy, enpassant_xy, old_p, old_c);
                             }
-                            /*if(((*obj)[1][5].name == 'P') && ((*obj)[1][5].color == 'b')) {
-                                printf("Really! %i\n", is_max);
-                                printf("Color a: %c\n", color);
-                                printf("X1:%i, Y1:%i; X2:%i, Y2:%i ;val = %f, depth = %i\n", origin_xy[0], origin_xy[1], moves[moves_i][0], moves[moves_i][1], new_value, depth[0]);
-                                sleep(5);
-                                exit(0);
-                            }*/ 
                             if(enpassant_xy != NULL) {
                                 free(enpassant_xy);
                             }
                             depth[0] = depth[0] + 1;
-                            //printf("X1:%i, Y1:%i; X2:%i, Y2:%i ;val = %f, depth = %i\n", origin_xy[0], origin_xy[1], moves[moves_i][0], moves[moves_i][1], new_value, depth[0]);
                             if(beta <= alpha) {
                                 break;
                             }

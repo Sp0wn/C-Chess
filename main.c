@@ -115,10 +115,13 @@ int main()
     //Sets vars for moves and different game values
     int *move_1w, *move_2w, *move_1b, *move_2b;
     int **moves_w, **moves_b;
+    int xy_temp[2], depth[2];
     int wm_done, bm_done;
     int row, column;
     int p_w, p_b;
-    int xy_temp[2];
+
+    //Computer depth
+    depth[0] = depth[1] = 3;
 
     move_1w = move_2w = move_1b = move_2b = NULL;
     moves_w = moves_b = attack_w = attack_b = NULL;
@@ -136,33 +139,7 @@ int main()
 
             //PvP online
             case 1:
-                set_pieces(b_ptr);
-                int deptht[2];
-                //int n_moves;
-                deptht[0] = deptht[1] = 8;
-                //int origin_xy[] = {4,0};
-                //int test[] = {1,7};
-                //(*b_ptr)[origin_xy[1]][origin_xy[0]].name = 'B';
-                //(*b_ptr)[1][5].name = 'b';
-                //(*b_ptr)[1][5].color = 'b';
-                //(*b_ptr)[origin_xy[1]][origin_xy[0]].color = 'w';
-                //show_logo(theme, 0);
                 endwin();
-                float test = minimax(b_ptr, deptht, 1, -1000.0, 1000.0, reset_p, w_castle, b_castle, 'w');
-                //int **b = square_attacked(w_king, 'w', NULL, b_ptr);
-                //int** a = legal_moves(origin_xy, b_ptr, 'w', b, w_castle, w_king, NULL, reset_p);
-                //if(a != NULL) {
-                //    n_moves = (*(a-1))[0];
-                    //printf("Can! %i %i,%i\n", n_moves, a[0][0], a[0][1]);
-                    //printf("Can! %i %i,%i\n", n_moves, a[1][0], a[1][1]);
-                //}
-                //if(b != NULL) {
-                    //exit(0);
-                //}
-                printf("%f\n", test);
-                //show_board(config[2], b_ptr, a, NULL, theme, NULL, ' ', config[3]);
-                //sleep(3);
-                //endwin();
                 exit(0);
                 break;
 
@@ -322,8 +299,6 @@ int main()
             //PvC
             case 3:
                 show_logo(theme, 0);
-                int depth[2];
-                depth[0] = depth[1] = 3;
 
                 //Initial screens
                 set_time(&Clock_struct, theme);
