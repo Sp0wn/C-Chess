@@ -1,6 +1,7 @@
 #include "set.h"
 
 #include "piece.h"
+#include <ctype.h>
 
 void set_color(piece (*obj)[8][8])
 {
@@ -95,4 +96,33 @@ void set_pieces(piece (*obj)[8][8])
     set_queens(obj);
     set_kings(obj);
     set_blank(obj);
+}
+
+void read_FEN(piece (*obj)[8][8], char *FEN)
+{
+    int row, col, index, space;
+
+    index = 0;
+
+    for(row = 7; row >= 0; row--) {
+        col = 0;
+        while(FEN[index] != '/' && FEN[index] != '\0') {
+            if(isdigit(FEN[index]) != 0) {
+                for(space = 0; space < (FEN[index] - 48); space++) {
+                    (*obj)[row][col].name = ' ';
+                    col++;
+                }
+            } else {
+                (*obj)[row][col].name = FEN[index];
+                if(isupper(FEN[index]) != 0) {
+                    (*obj)[row][col].color = 'w';
+                } else {
+                    (*obj)[row][col].color = 'b';
+                }
+                col++;
+            }
+            index++;
+        }
+        index++;
+    }       
 }

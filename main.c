@@ -466,7 +466,10 @@ int main()
                 break;
 
             case 4:
-               break;
+                read_FEN(b_ptr, "rnbqkb1r/ppp2ppp/5n2/3pp3/4PP2/2N5/PPPP2PP/R1BQKBNR");
+                show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ', config[3]);
+                sleep(5);
+                break;
 
             //Options
             case 5:

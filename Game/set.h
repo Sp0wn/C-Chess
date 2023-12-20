@@ -16,4 +16,7 @@ void set_blank(piece (*obj)[8][8]);
 
 void set_pieces(piece (*obj)[8][8]);
 
+void read_FEN(piece (*obj)[8][8], char* FEN);
+char* write_FEN(piece (*obj)[8][8]);
+
 #endif

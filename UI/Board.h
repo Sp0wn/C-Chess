@@ -16,4 +16,6 @@ int make_promotion(int option, int* origin_xy, piece (*obj)[8][8], char p_color)
 
 int* search_enpassant(piece (*obj)[8][8]);
 
+void PGN_to_FEN();
+
 #endif
