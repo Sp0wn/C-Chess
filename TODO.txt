@@ -1,4 +1,4 @@
--Add chess engine
+-Add chess engine (evaluation criteria, opening database, bonuses)
 -Add analysis board (Load pgn/fen, edit board, starting positon) with engine lines, openings
 database, and evaluation
 -Add Internet game

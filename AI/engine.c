@@ -142,13 +142,13 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
     int **attack_s, **moves;
     int *enpassant_xy;
     int origin_xy[2], move_xy[2], king_xy[2], original_castle[2];
-    int winner, perspective, material;
+    int winner, perspective;
     int row, col;
     int n_moves, moves_i;
     int pm, pa, n_attacks;
     char new_color, old_p, old_c;
     float value, new_value;
-    float tie_bias;
+    float tie_bias, material, doubled_pawns;
 
     attack_s = moves = NULL;
 
@@ -190,10 +190,11 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
     //of all the pieces
     if(depth[0] == 0) {
         material = eval_material(obj, color);
+        doubled_pawns = has_doublepawns(obj, color);
         if(material == 0) {
             return tie_bias * perspective;
         } else {
-            return material * perspective;
+            return (material + doubled_pawns) * perspective;
         }
     }
 
@@ -397,7 +398,7 @@ float minimax(piece (*obj)[8][8], int* depth, int is_max, float alpha, float bet
     return value;
 }
 
-void play_engine(piece (*obj)[8][8], char player, int *king, int *castle_w, int* castle_b, piece blank, int* depth)
+int* play_engine(piece (*obj)[8][8], char player, int *king, int *castle_w, int* castle_b, piece blank, int* depth)
 {
     float value = -1000.0;
     int row, col;
@@ -409,8 +410,10 @@ void play_engine(piece (*obj)[8][8], char player, int *king, int *castle_w, int*
     int best_move[2], best_origin[2];
     int best_promotion;
     int n_attacks, pa, pm;
-    int* enpassant_xy;
+    int* enpassant_xy, *engine_move;
     int **attack_s, **moves;
+
+    engine_move = malloc(2 * sizeof(int));
 
     attack_s = moves = NULL;
     for(row = 0; row < 8; row++) {
@@ -527,4 +530,7 @@ void play_engine(piece (*obj)[8][8], char player, int *king, int *castle_w, int*
         }
         free(moves-1);
     }
+    engine_move[0] = best_move[0];
+    engine_move[1] = best_move[1];
+    return engine_move;
 }

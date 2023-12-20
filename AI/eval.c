@@ -5,12 +5,34 @@
 #include "../Game/piece.h"
 #include "../Game/rules.h"
 
-int eval_material(piece (*obj)[8][8], char color)
+const double wpawn_table[8][8] = {
+    {0,0,0,0,0,0,0,0},
+    {0.5,0,0,-0.5,-0.5,0,0,0.5},
+    {0,0,0,0.5,0.5,0,0,0},
+    {-0.2,0,0,1,1,0,0,-0.2},
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0}
+};
+
+const double bpawn_table[8][8] = {
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0},
+    {-0.2,0,0,1,1,0,0,-0.2},
+    {0,0,0,0.5,0.5,0,0,0},
+    {0.5,0,0,-0.5,-0.5,0,0,0.5},
+    {0,0,0,0,0,0,0,0}
+};
+
+float eval_material(piece (*obj)[8][8], char color)
 {
-    int row, col, eval;
+    int row, col;
     char symbol;
 
-    eval = 0;
+    float eval = 0;
 
     for(row = 0; row < 8; row++) {
         for(col = 0; col < 8; col++) {
@@ -19,6 +41,7 @@ int eval_material(piece (*obj)[8][8], char color)
                 switch(symbol) {
                     case 'P':
                         eval = eval + 1;
+                        eval = eval + wpawn_table[row][col];
                         break;
                     case 'N':
                         eval = eval + 3;
@@ -37,6 +60,7 @@ int eval_material(piece (*obj)[8][8], char color)
                 switch(symbol) {
                     case 'p':
                         eval = eval - 1;
+                        eval = eval - bpawn_table[row][col];
                         break;
                     case 'n':
                         eval = eval - 3;
@@ -54,6 +78,34 @@ int eval_material(piece (*obj)[8][8], char color)
             } else {
                 continue;
             }
+        }
+    }
+
+    int perspective = (color == 'w') ? 1 : -1;
+    return eval * perspective;
+}
+
+float has_doublepawns(piece (*obj)[8][8], char color)
+{
+    float eval = 0;
+    int row, col; 
+    float n_wpawns, n_bpawns;
+
+    for(row = 0; row < 8; row++) {
+        n_wpawns = 0;
+        n_bpawns = 0;
+        for(col = 0; col < 8; col++) {
+            if((*obj)[row][col].name == 'P') {
+                n_wpawns = n_wpawns + 1;
+            } else if((*obj)[row][col].name == 'p') {
+                n_bpawns = n_bpawns + 1;
+            }  
+        }
+        if(n_wpawns > 1) {
+            eval = eval - (n_wpawns / 10);
+        }
+        if(n_bpawns > 1) {
+            eval = eval + (n_bpawns / 10);
         }
     }
 

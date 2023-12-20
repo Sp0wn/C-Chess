@@ -357,7 +357,8 @@ int main()
                         } while(move_1w == NULL || moves_w == NULL);
                     } else {
                         //play_random(b_ptr, 'w', w_king, w_castle, reset_p);
-                        play_engine(b_ptr, 'w', w_king, w_castle, b_castle, reset_p, depth);
+                        free(move_2w);
+                        move_2w = play_engine(b_ptr, 'w', w_king, w_castle, b_castle, reset_p, depth);
                     }
                     if (Clock_struct.end == 1) break;
 
@@ -434,7 +435,8 @@ int main()
                         } while(move_1b == NULL || moves_b == NULL);
                     } else {
                         //play_random(b_ptr, 'b', b_king, b_castle, reset_p);
-                        play_engine(b_ptr, 'b', b_king, w_castle, b_castle, reset_p, depth);
+                        free(move_2b);
+                        move_2b = play_engine(b_ptr, 'b', b_king, w_castle, b_castle, reset_p, depth);
                     }
                     if (Clock_struct.end == 1) break;
 
