@@ -467,8 +467,13 @@ int main()
 
             case 4:
                 read_FEN(b_ptr, "rnbqkb1r/ppp2ppp/5n2/3pp3/4PP2/2N5/PPPP2PP/R1BQKBNR");
+                endwin();
+                char* a = write_FEN(b_ptr);
+                printf("%s\n", a);
+                exit(0);
+                /*read_FEN(b_ptr, "rnbqkb1r/ppp2ppp/5n2/3pp3/4PP2/2N5/PPPP2PP/R1BQKBNR");
                 show_board(config[2], b_ptr, NULL, NULL, theme, NULL, ' ', config[3]);
-                sleep(5);
+                sleep(5);*/
                 break;
 
             //Options

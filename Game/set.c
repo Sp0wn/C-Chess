@@ -1,6 +1,7 @@
 #include "set.h"
 
 #include "piece.h"
+#include <stdlib.h>
 #include <ctype.h>
 
 void set_color(piece (*obj)[8][8])
@@ -125,4 +126,47 @@ void read_FEN(piece (*obj)[8][8], char *FEN)
         }
         index++;
     }       
+}
+
+char* write_FEN(piece (*obj)[8][8])
+{
+    int row, col, space;
+    int index, size;
+
+    char* FEN;
+    char temp[128];
+
+    index = 0;
+
+    for(row = 7; row >= 0; row--) {
+        for(col = 0; col < 8; col++) {
+            if((*obj)[row][col].name  == ' ') {
+                space = 0;
+                while((*obj)[row][col].name  == ' ' && col < 8) {
+                    space = space + 1;
+                    col++;
+                }
+                col--;
+                temp[index] = space + 48;
+                index++;
+            } else {
+                temp[index] = (*obj)[row][col].name;
+                index++;
+            }
+        }
+        if(row == 0) {
+            break;
+        }
+        temp[index] = '/';
+        index++;
+    }
+
+    size = index + 1;
+    FEN = malloc(size * sizeof(char));
+
+    for(index = 0; index < size; index++) {
+        FEN[index] = temp[index];
+    }
+
+    return FEN;
 }
