@@ -1,0 +1,8 @@
+# Compiled binaries
+bin/
+
+# Compiled objects
+build/
+
+# Nvim sessions
+.nvim/
