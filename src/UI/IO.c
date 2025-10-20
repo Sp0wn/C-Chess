@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+//Function to show the ASCII art game logo
 void show_logo(int* theme, bool animation) {
     int8_t i;
     int16_t max_x, x;
