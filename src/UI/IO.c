@@ -37,7 +37,7 @@ void show_logo(int* theme, bool animation) {
         //Adds delays of 2.5s for a smooth display
         if(animation == true) {
             refresh();
-            usleep(TIME);
+            usleep(250000);
         }
     }
 
