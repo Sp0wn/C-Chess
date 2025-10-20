@@ -1,12 +1,14 @@
 ##VAR
 CC = clang
-FILES = main.c
+FILE = main.c
+UI = src/UI/IO.c
 BIN = bin/bin
+FLAGS = -lncursesw
 
 all: mainapp
 
 mainapp:
-	$(CC) $(FILES) -o $(BIN)
+	$(CC) $(FILE) $(UI) $(FLAGS) -o $(BIN)
 
 clean: $(BIN)
 	rm $(BIN)
