@@ -1,6 +1,6 @@
 ##VAR
 CC = clang
-FILES = src/main.c
+FILES = main.c
 BIN = bin/bin
 
 all: mainapp

@@ -4,5 +4,8 @@ bin/
 # Compiled objects
 build/
 
+# Unit tests
+tests/
+
 # Nvim sessions
 .nvim/
