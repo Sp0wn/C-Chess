@@ -1,0 +1,11 @@
+# Compiled binaries
+bin/
+
+# Compiled objects
+build/
+
+# code tests
+tests/
+
+# Nvim sessions
+.nvim/
