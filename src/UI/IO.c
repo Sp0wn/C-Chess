@@ -24,7 +24,7 @@ char* load_logo(void) {
             endwin();
         }
         perror("Could not open logo file");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     //Calculates file size
@@ -34,6 +34,10 @@ char* load_logo(void) {
 
     //Allocates the space for the buffer
     logo = malloc(size);
+    if(logo == NULL) {
+        perror("Could not allocate memory");
+        exit(EXIT_FAILURE);
+    }
 
     //Reads the entire logo into the buffer
     fread(logo, 1, size, fptr);

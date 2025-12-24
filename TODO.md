@@ -1,7 +1,7 @@
 # TODO
 
 ## Remaining
-- [] Create install scripts
+- Create install scripts
 
 ## In progress
 
