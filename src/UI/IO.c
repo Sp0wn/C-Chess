@@ -15,31 +15,9 @@ char* load_logo(void) {
     long size;
     FILE* fptr;
     char* logo;
-    char logo_path[64];
 
-    //Tries to get the home variable
-    if(getenv("HOME") == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        fprintf(stderr, "Could not get the home variable\n");
-        exit(EXIT_FAILURE);
-    }
-
-    //Searches for the user directory
-    //$HOME/.C-Chess/logo.txt
-    strncpy(logo_path, getenv("HOME"), 64);
-    strncat(logo_path, "/.C-Chess/logo.txt", 32);
-
-    //Tries to open logo file
-    fptr = fopen(logo_path, "r");
-    if(fptr == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        perror("Could not open logo file");
-        exit(EXIT_FAILURE);
-    }
+    //Opens file and handles errors
+    fptr = open_file("/.C-Chess/logo.txt");
 
     //Calculates file size
     fseek(fptr, 0, SEEK_END);
@@ -79,35 +57,13 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     int i;
     FILE* fptr;
     MainMenu* mainMenu;
-    char main_menu_path[64], buff[128];
-    char section[16], key[32], value[32];
+    char section[16], key[32], value[32], buff[128];
 
     //Deallocates old configuration
     free(old);
 
-    //Tries to get the home variable
-    if(getenv("HOME") == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        fprintf(stderr, "Could not get the home variable\n");
-        exit(EXIT_FAILURE);
-    }
-
-    //Searches for the user directory
-    //$HOME/.C-Chess/logo.txt
-    strncpy(main_menu_path, getenv("HOME"), 64);
-    strncat(main_menu_path, "/.C-Chess/main_menu.ini", 32);
-
-    //Tries to open main menu file
-    fptr = fopen(main_menu_path, "r");
-    if(fptr == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        perror("Could not open logo file");
-        exit(EXIT_FAILURE);
-    }
+    //Opens file and handles errors
+    fptr = open_file("/.C-Chess/main_menu.ini");
 
     //Allocates memory for the struct
     mainMenu = malloc(sizeof(MainMenu));
@@ -134,9 +90,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     mainMenu->option_list[4] = mainMenu->option5;
 
     //Initializes strings
-    memset(key, 0, 32);
-    memset(value, 0, 32);
-    memset(section, 0, 16);
+    init_config_tokens(key, value, section);
 
     //Reads each option as a string
     while(fgets(buff, sizeof(buff), fptr)) {
@@ -202,35 +156,13 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     int i, j;
     FILE* fptr;
     OptionsMenu* optionsMenu;
-    char options_menu_path[64], buff[128];
-    char section[16], key[32], value[32];
+    char section[16], key[32], value[32], buff[128];;
 
     //Deallocates old configuration
     free(old);
 
-    //Tries to get the home variable
-    if(getenv("HOME") == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        fprintf(stderr, "Could not get the home variable\n");
-        exit(EXIT_FAILURE);
-    }
-
-    //Searches for the user directory
-    //$HOME/.C-Chess/options_menu.ini
-    strncpy(options_menu_path, getenv("HOME"), 64);
-    strncat(options_menu_path, "/.C-Chess/options_menu.ini", 32);
-    
-    //Tries to open game config file and manages errors 
-    fptr = fopen(options_menu_path, "r");
-    if(fptr == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        perror("Could not open logo file");
-        exit(EXIT_FAILURE);
-    }
+    //Opens file and handles errors
+    fptr = open_file("/.C-Chess/options_menu.ini");
 
     //Allocates memory for the struct
     optionsMenu = malloc(sizeof(OptionsMenu));
@@ -255,9 +187,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     optionsMenu->option_list[3] = optionsMenu->option4;
 
     //Initializes strings
-    memset(key, 0, 32);
-    memset(value, 0, 32);
-    memset(section, 0, 16);
+    init_config_tokens(key, value, section);
 
     //Reads each option as a string
     while(fgets(buff, sizeof(buff), fptr)) {
@@ -322,36 +252,14 @@ GameConfig* load_game_config(GameConfig* old) {
     int i;
     FILE* fptr;
     GameConfig* gameConfig;
-    char key[8], value[8];
-    char game_config_path[64], buff[16];
+    char key[8], value[8], buff[16];
 
     //Deallocates old configuration
     free(old);
 
-    //Tries to get the home variable
-    if(getenv("HOME") == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        fprintf(stderr, "Could not get the home variable\n");
-        exit(EXIT_FAILURE);
-    }
-
-    //Searches for the user directory
-    //$HOME/.config/C-Chess/options.cfg
-    strncpy(game_config_path, getenv("HOME"), 64);
-    strncat(game_config_path, "/.config/C-Chess/options.cfg", 32);
+    //Opens file and handles errors
+    fptr = open_file("/.config/C-Chess/options.cfg");
     
-    //Tries to open game config file and manages errors 
-    fptr = fopen(game_config_path, "r");
-    if(fptr == NULL) {
-        if(stdscr != NULL) {
-            endwin();
-        }
-        perror("Could not open logo file");
-        exit(EXIT_FAILURE);
-    }
-
     //Allocates memory for the struct
     gameConfig = malloc(sizeof(GameConfig));
     if(gameConfig == NULL) {
