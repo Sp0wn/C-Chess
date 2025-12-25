@@ -17,12 +17,21 @@ char* load_logo(void) {
     char* logo;
     char logo_path[64];
 
+    //Tries to get the home variable
+    if(getenv("HOME") == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        fprintf(stderr, "Could not get the home variable\n");
+        exit(EXIT_FAILURE);
+    }
+
     //Searches for the user directory
     //$HOME/.C-Chess/logo.txt
-    strcpy(logo_path, getenv("HOME"));
-    strcat(logo_path, "/.C-Chess/logo.txt");
+    strncpy(logo_path, getenv("HOME"), 64);
+    strncat(logo_path, "/.C-Chess/logo.txt", 32);
 
-    //Tries to open logo file and manages errors 
+    //Tries to open logo file
     fptr = fopen(logo_path, "r");
     if(fptr == NULL) {
         if(stdscr != NULL) {
@@ -37,9 +46,21 @@ char* load_logo(void) {
     size = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
+    //Checks if the file is empty
+    if(size <= 0) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        fprintf(stderr, "Corrupted file\n");
+        exit(EXIT_FAILURE);
+    }
+
     //Allocates the space for the buffer
     logo = calloc(size, sizeof(char));
     if(logo == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
         perror("Could not allocate memory");
         exit(EXIT_FAILURE);
     }
@@ -64,12 +85,21 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     //Deallocates old configuration
     free(old);
 
+    //Tries to get the home variable
+    if(getenv("HOME") == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        fprintf(stderr, "Could not get the home variable\n");
+        exit(EXIT_FAILURE);
+    }
+
     //Searches for the user directory
     //$HOME/.C-Chess/logo.txt
-    strcpy(main_menu_path, getenv("HOME"));
-    strcat(main_menu_path, "/.C-Chess/main_menu.ini");
+    strncpy(main_menu_path, getenv("HOME"), 64);
+    strncat(main_menu_path, "/.C-Chess/main_menu.ini", 32);
 
-    //Tries to open main menu file and manages errors 
+    //Tries to open main menu file
     fptr = fopen(main_menu_path, "r");
     if(fptr == NULL) {
         if(stdscr != NULL) {
@@ -82,6 +112,9 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     //Allocates memory for the struct
     mainMenu = malloc(sizeof(MainMenu));
     if(mainMenu == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
         perror("Could not allocate memory");
         exit(EXIT_FAILURE);
     }
@@ -140,21 +173,21 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
         memset(value, 0, 32);
 
         //Compares string with selected language
-        if(strcmp(section, lang) == 0) {
+        if(strncmp(section, lang, 4) == 0) {
             //Splits key and value variables
             tokenize_config(key, value, buff);
             
             //Assigns saved value to structure
-            if(strcmp(key, "option1") == 0) {
-                strcpy(mainMenu->option1, value);
-            } else if(strcmp(key, "option2") == 0) {
-                strcpy(mainMenu->option2, value);
-            } else if(strcmp(key, "option3") == 0) {
-                strcpy(mainMenu->option3, value);
-            } else if(strcmp(key, "option4") == 0) {
-                strcpy(mainMenu->option4, value);
-            } else if(strcmp(key, "option5") == 0) {
-                strcpy(mainMenu->option5, value);
+            if(strncmp(key, "option1", 32) == 0) {
+                strncpy(mainMenu->option1, value, 64);
+            } else if(strncmp(key, "option2", 32) == 0) {
+                strncpy(mainMenu->option2, value, 64);
+            } else if(strncmp(key, "option3", 32) == 0) {
+                strncpy(mainMenu->option3, value, 64);
+            } else if(strncmp(key, "option4", 32) == 0) {
+                strncpy(mainMenu->option4, value, 64);
+            } else if(strncmp(key, "option5", 32) == 0) {
+                strncpy(mainMenu->option5, value, 64);
             }
         }
     }
@@ -176,10 +209,19 @@ GameConfig* load_game_config(GameConfig* old) {
     //Deallocates old configuration
     free(old);
 
+    //Tries to get the home variable
+    if(getenv("HOME") == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        fprintf(stderr, "Could not get the home variable\n");
+        exit(EXIT_FAILURE);
+    }
+
     //Searches for the user directory
     //$HOME/.config/C-Chess/options.cfg
-    strcpy(game_config_path, getenv("HOME"));
-    strcat(game_config_path, "/.config/C-Chess/options.cfg");
+    strncpy(game_config_path, getenv("HOME"), 64);
+    strncat(game_config_path, "/.config/C-Chess/options.cfg", 32);
     
     //Tries to open game config file and manages errors 
     fptr = fopen(game_config_path, "r");
@@ -194,6 +236,9 @@ GameConfig* load_game_config(GameConfig* old) {
     //Allocates memory for the struct
     gameConfig = malloc(sizeof(GameConfig));
     if(gameConfig == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
         perror("Could not allocate memory");
         exit(EXIT_FAILURE);
     }
@@ -206,18 +251,23 @@ GameConfig* load_game_config(GameConfig* old) {
         memset(key, 0, 8);
         memset(value, 0, 8);
 
+        //Checks for invalid lines
+        if(buff[0] == ' ' || buff[0] == '\n' || buff[0] == '\0') {
+            continue;
+        }
+
         //Splits key and value variables
         tokenize_config(key, value, buff);
 
         //Assigns saved value to structure
-        if(strcmp(key, "lang") == 0) {
-            strcpy(gameConfig->lang, value);
-        } else if(strcmp(key, "theme") == 0) {
-            strcpy(gameConfig->theme, value);
-        } else if(strcmp(key, "style") == 0) {
-            strcpy(gameConfig->style, value);
-        } else if(strcmp(key, "side") == 0) {
-            strcpy(gameConfig->side, value);
+        if(strncmp(key, "lang", 8) == 0) {
+            strncpy(gameConfig->lang, value, 4);
+        } else if(strncmp(key, "theme", 8) == 0) {
+            strncpy(gameConfig->theme, value, 2);
+        } else if(strncmp(key, "style", 8) == 0) {
+            strncpy(gameConfig->style, value, 2);
+        } else if(strncmp(key, "side", 8) == 0) {
+            strncpy(gameConfig->side, value, 2);
         }
     }
 
