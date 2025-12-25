@@ -1,6 +1,9 @@
 //File guard
 #include "../../include/UI/IO.h"
 
+//Include util functions
+#include "../../include/UI/ui_utils.h"
+
 //Libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +55,7 @@ char* load_logo(void) {
 
 //Loads into memory the menu strings
 MainMenu* load_main_menu(MainMenu* old, char* lang) {
-    int i, j;
+    int i;
     FILE* fptr;
     MainMenu* mainMenu;
     char main_menu_path[64], buff[128];
@@ -105,7 +108,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     //Reads each option as a string
     while(fgets(buff, sizeof(buff), fptr)) {
         //Initializes iterators
-        i = j = 0;
+        i = 0;
 
         //Searches for the section
         if(buff[i] == '[') {
@@ -138,20 +141,9 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
 
         //Compares string with selected language
         if(strcmp(section, lang) == 0) {
-            //Parses the key
-            while(buff[i] != '=') {
-                key[i] = buff[i];
-                i++;
-            }
-            key[i] = '\0';
-
-            //Parses the value
-            while(buff[i + 1 + j] != '\n') {
-                value[j] = buff[i + 1 + j];
-                j++;
-            }
-            value[j] = '\0';
-
+            //Splits key and value variables
+            tokenize_config(key, value, buff);
+            
             //Assigns saved value to structure
             if(strcmp(key, "option1") == 0) {
                 strcpy(mainMenu->option1, value);
@@ -175,7 +167,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
 
 //Loads into memory the game configurations
 GameConfig* load_game_config(GameConfig* old) {
-    int i, j;
+    int i;
     FILE* fptr;
     GameConfig* gameConfig;
     char key[8], value[8];
@@ -210,23 +202,12 @@ GameConfig* load_game_config(GameConfig* old) {
     //Reads each configuration as a string
     while(fgets(buff, sizeof(buff), fptr)) {
         //Initializes loop variables
-        i = j = 0;
+        i = 0;
         memset(key, 0, 8);
         memset(value, 0, 8);
 
-        //Parses the key
-        while(buff[i] != '=') {
-            key[i] = buff[i];
-            i++;
-        }
-        key[i] = '\0';
-
-        //Parses the value
-        while(buff[i + 1 + j] != '\n') {
-            value[j] = buff[i + 1 + j];
-            j++;
-        }
-        value[j] = '\0';
+        //Splits key and value variables
+        tokenize_config(key, value, buff);
 
         //Assigns saved value to structure
         if(strcmp(key, "lang") == 0) {
