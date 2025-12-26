@@ -42,7 +42,7 @@ FILE* open_file(char* file) {
 void init_config_tokens(char* key, char* value, char* section) {
     //Sets to zero all bytes
     memset(key, 0, 32);
-    memset(value, 0, 32);
+    memset(value, 0, 64);
     memset(section, 0, 16);
 }
 

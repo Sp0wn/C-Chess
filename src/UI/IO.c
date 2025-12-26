@@ -57,7 +57,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     int i;
     FILE* fptr;
     MainMenu* mainMenu;
-    char section[16], key[32], value[32], buff[128];
+    char section[16], key[32], value[64], buff[128];
 
     //Deallocates old configuration
     free(old);
@@ -124,7 +124,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
 
         //Cleans strings
         memset(key, 0, 32);
-        memset(value, 0, 32);
+        memset(value, 0, 64);
 
         //Compares string with selected language
         if(strncmp(section, lang, 4) == 0) {
@@ -152,11 +152,12 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     return mainMenu;
 }
 
+//Loads into memory the menu strings
 OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     int i, j;
     FILE* fptr;
     OptionsMenu* optionsMenu;
-    char section[16], key[32], value[32], buff[128];;
+    char section[16], key[32], value[64], buff[128];;
 
     //Deallocates old configuration
     free(old);
@@ -221,7 +222,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
 
         //Cleans strings
         memset(key, 0, 32);
-        memset(value, 0, 32);
+        memset(value, 0, 64);
 
         //Compares string with selected language
         if(strncmp(section, lang, 4) == 0) {
@@ -245,6 +246,128 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     fclose(fptr);
 
     return optionsMenu;
+}
+
+//Loads into memory the variables for the option menu
+OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* config) {
+    int i, j;
+    FILE* fptr;
+    OptionsVariables* optionsVariables;
+    char section[16], key[32], value[64], buff[128];;
+
+    //Deallocates old configuration
+    free(old);
+
+    //Opens file and handles errors
+    fptr = open_file("/.C-Chess/options_variables.ini");
+
+    //Allocates memory for the struct
+    optionsVariables = malloc(sizeof(OptionsVariables));
+    if(optionsVariables == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        perror("Could not allocate memory");
+        exit(EXIT_FAILURE);
+    }
+
+    //Sets to zero strings
+    memset(optionsVariables->selected_variable1, 0, 4);
+    memset(optionsVariables->selected_variable2, 0, 2);
+    memset(optionsVariables->selected_variable3, 0, 8);
+    memset(optionsVariables->selected_variable4, 0, 2);
+
+    //Sets selected variables
+    strncpy(optionsVariables->selected_variable1, config->lang, 4);
+    strncpy(optionsVariables->selected_variable2, config->theme, 2);
+    strncpy(optionsVariables->selected_variable3, config->style, 8);
+    strncpy(optionsVariables->selected_variable4, config->side, 2);
+
+    //Links strings to internal array
+    optionsVariables->variables_list[0] = optionsVariables->selected_variable1;
+    optionsVariables->variables_list[1] = optionsVariables->selected_variable2;
+    optionsVariables->variables_list[2] = optionsVariables->selected_variable3;
+    optionsVariables->variables_list[3] = optionsVariables->selected_variable4;
+
+    //Initializes strings
+    init_config_tokens(key, value, section);
+
+    //Reads each option as a string
+    while(fgets(buff, sizeof(buff), fptr)) {
+        //Initializes iterators
+        i = 0;
+
+        //Searches for the section
+        if(buff[i] == '[') {
+            //Starts reading the section
+            i++;
+            memset(section, 0, 16);
+
+            //Parses the section
+            while(buff[i] != ']') {
+                section[i - 1] = buff[i];
+                i++;
+            }
+            section[i - 1] = '\0';
+            continue;
+        }
+
+        //Checks for invalid lines
+        if(buff[0] == ' ' || buff[0] == '\n' || buff[0] == '\0') {
+            continue;
+        }
+
+        //Checks if the string is empty
+        if(section[0] == 0) {
+            continue;
+        }
+
+        //Cleans strings
+        memset(key, 0, 32);
+        memset(value, 0, 64);
+
+        //Splits key and value variables
+        tokenize_config(key, value, buff);
+
+        //Compares string with option to be read
+        if(strncmp(section, "option1", 16) == 0) {
+            if(strncmp(key, "variable1", 32) == 0) {
+                strncpy(optionsVariables->option1_variables[0], value, 4);
+            } else if(strncmp(key, "variable2", 32) == 0) {
+                strncpy(optionsVariables->option1_variables[1], value, 4);
+            } else if(strncmp(key, "variable3", 32) == 0) {
+                strncpy(optionsVariables->option1_variables[2], value, 4);
+            }
+
+        } else if(strncmp(section, "option2", 16) == 0) {
+            if(strncmp(key, "variable1", 32) == 0) {
+                strncpy(optionsVariables->option2_variables[0], value, 2);
+            } else if(strncmp(key, "variable2", 32) == 0) {
+                strncpy(optionsVariables->option2_variables[1], value, 2);
+            } else if(strncmp(key, "variable3", 32) == 0) {
+                strncpy(optionsVariables->option2_variables[2], value, 2);
+            }
+
+        } else if(strncmp(section, "option3", 16) == 0) {
+            if(strncmp(key, "variable1", 32) == 0) {
+                strncpy(optionsVariables->option3_variables[0], value, 8);
+            } else if(strncmp(key, "variable2", 32) == 0) {
+                strncpy(optionsVariables->option3_variables[1], value, 8);
+            }
+
+        } else if(strncmp(section, "option4", 16) == 0) {
+            if(strncmp(key, "variable1", 32) == 0) {
+                strncpy(optionsVariables->option4_variables[0], value, 2);
+            } else if(strncmp(key, "variable2", 32) == 0) {
+                strncpy(optionsVariables->option4_variables[1], value, 2);
+            }
+        } 
+    }
+
+    //Closes gracefully the file
+    fclose(fptr);
+
+    return optionsVariables;
 }
 
 //Loads into memory the game configurations
