@@ -81,18 +81,18 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     }
 
     //Sets to zero strings
-    memset(mainMenu->option1, 0, 64);
-    memset(mainMenu->option2, 0, 64);
-    memset(mainMenu->option3, 0, 64);
-    memset(mainMenu->option4, 0, 64);
-    memset(mainMenu->option5, 0, 64);
+    memset(mainMenu->opt1, 0, 64);
+    memset(mainMenu->opt2, 0, 64);
+    memset(mainMenu->opt3, 0, 64);
+    memset(mainMenu->opt4, 0, 64);
+    memset(mainMenu->opt5, 0, 64);
 
     //Links strings to internal array
-    mainMenu->option_list[0] = mainMenu->option1;
-    mainMenu->option_list[1] = mainMenu->option2;
-    mainMenu->option_list[2] = mainMenu->option3;
-    mainMenu->option_list[3] = mainMenu->option4;
-    mainMenu->option_list[4] = mainMenu->option5;
+    mainMenu->opt_list[0] = mainMenu->opt1;
+    mainMenu->opt_list[1] = mainMenu->opt2;
+    mainMenu->opt_list[2] = mainMenu->opt3;
+    mainMenu->opt_list[3] = mainMenu->opt4;
+    mainMenu->opt_list[4] = mainMenu->opt5;
 
     //Initializes strings
     init_config_tokens(key, value, section);
@@ -138,15 +138,15 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
             
             //Assigns saved value to structure
             if(strncmp(key, "option1", 32) == 0) {
-                strncpy(mainMenu->option1, value, 64);
+                strncpy(mainMenu->opt1, value, 64);
             } else if(strncmp(key, "option2", 32) == 0) {
-                strncpy(mainMenu->option2, value, 64);
+                strncpy(mainMenu->opt2, value, 64);
             } else if(strncmp(key, "option3", 32) == 0) {
-                strncpy(mainMenu->option3, value, 64);
+                strncpy(mainMenu->opt3, value, 64);
             } else if(strncmp(key, "option4", 32) == 0) {
-                strncpy(mainMenu->option4, value, 64);
+                strncpy(mainMenu->opt4, value, 64);
             } else if(strncmp(key, "option5", 32) == 0) {
-                strncpy(mainMenu->option5, value, 64);
+                strncpy(mainMenu->opt5, value, 64);
             }
         }
     }
@@ -181,16 +181,16 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     }
 
     //Sets to zero strings
-    memset(optionsMenu->option1, 0, 32);
-    memset(optionsMenu->option2, 0, 32);
-    memset(optionsMenu->option3, 0, 32);
-    memset(optionsMenu->option4, 0, 32);
+    memset(optionsMenu->opt1, 0, 32);
+    memset(optionsMenu->opt2, 0, 32);
+    memset(optionsMenu->opt3, 0, 32);
+    memset(optionsMenu->opt4, 0, 32);
 
     //Links strings to internal array
-    optionsMenu->option_list[0] = optionsMenu->option1;
-    optionsMenu->option_list[1] = optionsMenu->option2;
-    optionsMenu->option_list[2] = optionsMenu->option3;
-    optionsMenu->option_list[3] = optionsMenu->option4;
+    optionsMenu->opt_list[0] = optionsMenu->opt1;
+    optionsMenu->opt_list[1] = optionsMenu->opt2;
+    optionsMenu->opt_list[2] = optionsMenu->opt3;
+    optionsMenu->opt_list[3] = optionsMenu->opt4;
 
     //Initializes strings
     init_config_tokens(key, value, section);
@@ -236,13 +236,13 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
             
             //Assigns saved value to structure
             if(strncmp(key, "option1", 32) == 0) {
-                strncpy(optionsMenu->option1, value, 32);
+                strncpy(optionsMenu->opt1, value, 32);
             } else if(strncmp(key, "option2", 32) == 0) {
-                strncpy(optionsMenu->option2, value, 32);
+                strncpy(optionsMenu->opt2, value, 32);
             } else if(strncmp(key, "option3", 32) == 0) {
-                strncpy(optionsMenu->option3, value, 32);
+                strncpy(optionsMenu->opt3, value, 32);
             } else if(strncmp(key, "option4", 32) == 0) {
-                strncpy(optionsMenu->option4, value, 32);
+                strncpy(optionsMenu->opt4, value, 32);
             }
         }
     }
@@ -277,22 +277,22 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
     }
 
     //Sets to zero strings
-    memset(optionsVariables->selected_variable1, 0, 4);
-    memset(optionsVariables->selected_variable2, 0, 2);
-    memset(optionsVariables->selected_variable3, 0, 8);
-    memset(optionsVariables->selected_variable4, 0, 2);
+    memset(optionsVariables->sel_var1, 0, 4);
+    memset(optionsVariables->sel_var2, 0, 2);
+    memset(optionsVariables->sel_var3, 0, 8);
+    memset(optionsVariables->sel_var4, 0, 2);
 
     //Sets selected variables
-    strncpy(optionsVariables->selected_variable1, config->lang, 4);
-    strncpy(optionsVariables->selected_variable2, config->theme, 2);
-    strncpy(optionsVariables->selected_variable3, config->style, 8);
-    strncpy(optionsVariables->selected_variable4, config->side, 2);
+    strncpy(optionsVariables->sel_var1, config->lang, 4);
+    strncpy(optionsVariables->sel_var2, config->theme, 2);
+    strncpy(optionsVariables->sel_var3, config->style, 8);
+    strncpy(optionsVariables->sel_var4, config->side, 2);
 
     //Links strings to internal array
-    optionsVariables->variables_list[0] = optionsVariables->selected_variable1;
-    optionsVariables->variables_list[1] = optionsVariables->selected_variable2;
-    optionsVariables->variables_list[2] = optionsVariables->selected_variable3;
-    optionsVariables->variables_list[3] = optionsVariables->selected_variable4;
+    optionsVariables->vars_list[0] = optionsVariables->sel_var1;
+    optionsVariables->vars_list[1] = optionsVariables->sel_var2;
+    optionsVariables->vars_list[2] = optionsVariables->sel_var3;
+    optionsVariables->vars_list[3] = optionsVariables->sel_var4;
 
     //Initializes strings
     init_config_tokens(key, value, section);
@@ -337,34 +337,34 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
         //Compares string with option to be read
         if(strncmp(section, "option1", 16) == 0) {
             if(strncmp(key, "variable1", 32) == 0) {
-                strncpy(optionsVariables->option1_variables[0], value, 4);
+                strncpy(optionsVariables->opt1_vars[0], value, 4);
             } else if(strncmp(key, "variable2", 32) == 0) {
-                strncpy(optionsVariables->option1_variables[1], value, 4);
+                strncpy(optionsVariables->opt1_vars[1], value, 4);
             } else if(strncmp(key, "variable3", 32) == 0) {
-                strncpy(optionsVariables->option1_variables[2], value, 4);
+                strncpy(optionsVariables->opt1_vars[2], value, 4);
             }
 
         } else if(strncmp(section, "option2", 16) == 0) {
             if(strncmp(key, "variable1", 32) == 0) {
-                strncpy(optionsVariables->option2_variables[0], value, 2);
+                strncpy(optionsVariables->opt2_vars[0], value, 2);
             } else if(strncmp(key, "variable2", 32) == 0) {
-                strncpy(optionsVariables->option2_variables[1], value, 2);
+                strncpy(optionsVariables->opt2_vars[1], value, 2);
             } else if(strncmp(key, "variable3", 32) == 0) {
-                strncpy(optionsVariables->option2_variables[2], value, 2);
+                strncpy(optionsVariables->opt2_vars[2], value, 2);
             }
 
         } else if(strncmp(section, "option3", 16) == 0) {
             if(strncmp(key, "variable1", 32) == 0) {
-                strncpy(optionsVariables->option3_variables[0], value, 8);
+                strncpy(optionsVariables->opt3_vars[0], value, 8);
             } else if(strncmp(key, "variable2", 32) == 0) {
-                strncpy(optionsVariables->option3_variables[1], value, 8);
+                strncpy(optionsVariables->opt3_vars[1], value, 8);
             }
 
         } else if(strncmp(section, "option4", 16) == 0) {
             if(strncmp(key, "variable1", 32) == 0) {
-                strncpy(optionsVariables->option4_variables[0], value, 2);
+                strncpy(optionsVariables->opt4_vars[0], value, 2);
             } else if(strncmp(key, "variable2", 32) == 0) {
-                strncpy(optionsVariables->option4_variables[1], value, 2);
+                strncpy(optionsVariables->opt4_vars[1], value, 2);
             }
         } 
     }
