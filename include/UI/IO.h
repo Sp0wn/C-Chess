@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 char* load_logo(void);
-void show_logo(GameTheme* theme, bool do_animation);
+void show_logo(GameTheme* theme, bool do_animation, char* logo);
 
 MainMenu* load_main_menu(MainMenu* old, char* lang);
 

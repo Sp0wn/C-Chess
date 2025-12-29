@@ -9,7 +9,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include <ncurses.h>
+
+//Maximum length of logo
+#define LOGO_LEN 54
 
 //Loads the logo dynamically
 char* load_logo(void) {
@@ -35,7 +39,7 @@ char* load_logo(void) {
     }
 
     //Allocates the space for the buffer
-    logo = calloc(size, sizeof(char));
+    logo = calloc(size + 1, sizeof(char));
     if(logo == NULL) {
         if(stdscr != NULL) {
             endwin();
@@ -43,9 +47,10 @@ char* load_logo(void) {
         perror("Could not allocate memory");
         exit(EXIT_FAILURE);
     }
-
     //Reads the entire logo into the buffer
     fread(logo, 1, size, fptr);
+    //Adds terminator
+    logo[size] = '\0';
 
     //Closes gracefully the file
     fclose(fptr);
@@ -53,8 +58,43 @@ char* load_logo(void) {
     return logo;
 }
 
-//Shows the logo to the screen
-void show_logo(GameTheme* theme, bool do_animation) {
+//Displays the logo to the screen
+void show_logo(GameTheme* theme, bool do_animation, char* logo) {
+    int i, x, y, x_offset;
+
+    //Gets the starting point for the logo
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_LEN / 2);
+
+    clear();
+
+    attron(COLOR_PAIR(theme->color_white));
+
+    i = x = 0;
+    //Prints each line
+    for(y = 0; y < 6; y++) {
+        x = 0;
+        //Prints each character
+        while(logo[i] != '\n' && logo[i] != '\0') {
+            mvaddch(y, x + x_offset, logo[i]);
+            x++;
+            i++;
+        }
+
+        //Checks if it is still inside array bounds
+        if(logo[i] != '\0') {
+            i++;
+        }
+
+        //Adds a delay of 0.25s for a simple animation
+        if(do_animation == true) {
+            refresh();
+            usleep(250000);
+        }
+    }
+
+    attroff(COLOR_PAIR(theme->color_white));
+
+    refresh();
 }
 
 //Loads into memory the menu strings
