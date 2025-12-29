@@ -5,8 +5,12 @@
 #include "../../include/UI/optionsmenu.h"
 #include "../../include/UI/optionsvariables.h"
 #include "../../include/UI/gameconfig.h"
+#include "../../include/UI/gametheme.h"
+
+#include <stdbool.h>
 
 char* load_logo(void);
+void show_logo(GameTheme* theme, bool do_animation);
 
 MainMenu* load_main_menu(MainMenu* old, char* lang);
 
@@ -15,5 +19,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang);
 OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* config);
 
 GameConfig* load_game_config(GameConfig* old);
+
+GameTheme* load_game_theme(GameTheme* old, char* sel_theme);
 
 #endif

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <ncurses.h>
 
 //Loads the logo dynamically
@@ -52,6 +53,10 @@ char* load_logo(void) {
     return logo;
 }
 
+//Shows the logo to the screen
+void show_logo(GameTheme* theme, bool do_animation) {
+}
+
 //Loads into memory the menu strings
 MainMenu* load_main_menu(MainMenu* old, char* lang) {
     int i;
@@ -59,7 +64,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     MainMenu* mainMenu;
     char section[16], key[32], value[64], buff[128];
 
-    //Deallocates old configuration
+    //Deallocates old menu
     free(old);
 
     //Opens file and handles errors
@@ -159,7 +164,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     OptionsMenu* optionsMenu;
     char section[16], key[32], value[64], buff[128];;
 
-    //Deallocates old configuration
+    //Deallocates old menu
     free(old);
 
     //Opens file and handles errors
@@ -255,7 +260,7 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
     OptionsVariables* optionsVariables;
     char section[16], key[32], value[64], buff[128];;
 
-    //Deallocates old configuration
+    //Deallocates old struct
     free(old);
 
     //Opens file and handles errors
@@ -425,4 +430,38 @@ GameConfig* load_game_config(GameConfig* old) {
     fclose(fptr);
 
     return gameConfig;
+}
+
+GameTheme* load_game_theme(GameTheme* old, char* sel_theme) {
+    GameTheme* gameTheme;
+
+    //Deallocates old theme
+    free(old);
+
+    //Allocates memory for the struct
+    gameTheme = malloc(sizeof(GameTheme));
+    if(gameTheme == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        perror("Could not allocate memory");
+        exit(EXIT_FAILURE);
+    }
+
+    //Assigns colors codes based on the theme
+    if(strncmp(sel_theme, "1", 2) == 0) {
+        gameTheme->color_white = 1;
+        gameTheme->color_text = 2;
+        gameTheme->color_black = 3;
+    } else if(strncmp(sel_theme, "2", 2) == 0) {
+        gameTheme->color_white = 4;
+        gameTheme->color_text = 5;
+        gameTheme->color_black = 6;
+    } else if(strncmp(sel_theme, "3", 2) == 0) {
+        gameTheme->color_white = 7;
+        gameTheme->color_text = 8;
+        gameTheme->color_black = 9;
+    }
+
+    return gameTheme;
 }
