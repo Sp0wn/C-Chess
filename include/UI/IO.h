@@ -13,6 +13,7 @@ char* load_logo(void);
 void show_logo(GameTheme* theme, bool do_animation, char* logo);
 
 MainMenu* load_main_menu(MainMenu* old, char* lang);
+int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme);
 
 OptionsMenu* load_options_menu(OptionsMenu* old, char* lang);
 

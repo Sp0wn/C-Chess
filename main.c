@@ -1,4 +1,5 @@
 #include "include/UI/IO.h"
+#include "include/UI/mainmenu.h"
 
 #include <stdbool.h>
 #include <unistd.h>
@@ -43,7 +44,11 @@ int main(void) {
     GameTheme* theme_ptr = load_game_theme(NULL, config_ptr->theme);
     
     show_logo(theme_ptr, true, logo_ptr);
-    sleep(5);
+
+    MainMenu* main_menu_ptr = load_main_menu(NULL, config_ptr->lang);
+    show_main_menu(main_menu_ptr, config_ptr->lang, theme_ptr);
+
+    sleep(2);
 
     endwin();
     return 0;

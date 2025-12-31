@@ -12,8 +12,19 @@
 #include <unistd.h>
 #include <ncurses.h>
 
-//Maximum length of logo
-#define LOGO_LEN 54
+//Maximum dimensions of logo
+#define LOGO_H 6
+#define LOGO_W 54
+
+//Size of borders
+#define BOX_BORDER 1
+
+//Height of main menu
+#define MAIN_MENU_SIZE 5
+
+//Key codes
+#define ESC 27
+#define ENTER 10
 
 //Loads the logo dynamically
 char* load_logo(void) {
@@ -63,7 +74,7 @@ void show_logo(GameTheme* theme, bool do_animation, char* logo) {
     int i, x, y, x_offset;
 
     //Gets the starting point for the logo
-    x_offset = (getmaxx(stdscr) / 2) - (LOGO_LEN / 2);
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
 
     clear();
 
@@ -195,6 +206,80 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     fclose(fptr);
 
     return mainMenu;
+}
+
+//Displays the interactive main menu
+int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
+    bool done;
+    int ch, option;
+    int width, height;
+    int i, x_offset, y_offset;
+
+    //Defines size and starting points of window
+    width = LOGO_W + 2*BOX_BORDER;
+    height = MAIN_MENU_SIZE + 2*BOX_BORDER;
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
+    y_offset = LOGO_H + 1;
+
+    //Creates window
+    WINDOW* main_menu_win = newwin(height, width, y_offset, x_offset);
+    if(main_menu_win == NULL) {
+        endwin();
+        fprintf(stderr, "Could not create new window\n");
+        exit(EXIT_FAILURE);
+    }
+
+    //Adds attributes
+    keypad(main_menu_win, TRUE);
+    wattron(main_menu_win, COLOR_PAIR(theme->color_text));
+    box(main_menu_win, 0, 0);
+
+    //Main menu loop
+    option = 1;
+    done = false;
+    while(done == false) {
+        //Starts printing all options
+        for(i = 0; i < 5; i++) {
+            //Checks if selected option equals line
+            if(option == (i + 1)) {
+                wattron(main_menu_win, A_STANDOUT);
+                mvwaddstr(main_menu_win, i + 1, 1, mainMenu->opt_list[i]);
+                wattroff(main_menu_win, A_STANDOUT);
+                continue;
+            }
+            mvwaddstr(main_menu_win, i + 1, 1, mainMenu->opt_list[i]);
+        }
+        wrefresh(main_menu_win);
+
+        //Waits for input
+        ch = wgetch(main_menu_win);
+
+        switch(ch) {
+            case ESC:
+                option = 0;
+                done = true;
+                break;
+
+            case KEY_UP:
+                option = (option == 1) ? 5 : option - 1;
+                break;
+
+            case KEY_DOWN:
+                option = (option == 5) ? 1 : option + 1;
+                break;
+
+            case ENTER:
+                done = true;
+                break;
+        }
+    }
+
+    wattroff(main_menu_win, COLOR_PAIR(theme->color_text));
+
+    //Deletes allocated window
+    delwin(main_menu_win);
+
+    return option;
 }
 
 //Loads into memory the menu strings
