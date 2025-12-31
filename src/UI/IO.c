@@ -78,7 +78,9 @@ void show_logo(GameTheme* theme, bool do_animation, char* logo) {
 
     clear();
 
-    attron(COLOR_PAIR(theme->color_white));
+    if(has_colors() == true) {
+        attron(COLOR_PAIR(theme->color_white));
+    }
 
     i = x = 0;
     //Prints each line
@@ -103,7 +105,9 @@ void show_logo(GameTheme* theme, bool do_animation, char* logo) {
         }
     }
 
-    attroff(COLOR_PAIR(theme->color_white));
+    if(has_colors() == true) {
+        attroff(COLOR_PAIR(theme->color_white));
+    }
 
     refresh();
 }
@@ -229,9 +233,12 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
         exit(EXIT_FAILURE);
     }
 
+    if(has_colors() == true) {
+        wattron(main_menu_win, COLOR_PAIR(theme->color_text));
+    }
+
     //Adds attributes
     keypad(main_menu_win, TRUE);
-    wattron(main_menu_win, COLOR_PAIR(theme->color_text));
     box(main_menu_win, 0, 0);
 
     //Main menu loop
@@ -241,7 +248,7 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
         //Starts printing all options
         for(i = 0; i < 5; i++) {
             //Checks if selected option equals line
-            if(option == (i + 1)) {
+            if(option == (i + 1) && has_colors() == true) {
                 wattron(main_menu_win, A_STANDOUT);
                 mvwaddstr(main_menu_win, i + 1, 1, mainMenu->opt_list[i]);
                 wattroff(main_menu_win, A_STANDOUT);
@@ -274,7 +281,9 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
         }
     }
 
-    wattroff(main_menu_win, COLOR_PAIR(theme->color_text));
+    if(has_colors() == true) {
+        wattroff(main_menu_win, COLOR_PAIR(theme->color_text));
+    }
 
     //Deletes allocated window
     delwin(main_menu_win);
