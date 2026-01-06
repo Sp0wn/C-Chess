@@ -1,5 +1,7 @@
 #include "include/UI/IO.h"
 #include "include/UI/mainmenu.h"
+#include "include/UI/optionsmenu.h"
+#include "include/UI/optionsvariables.h"
 
 #include <stdbool.h>
 #include <unistd.h>
@@ -47,6 +49,13 @@ int main(void) {
 
     MainMenu* main_menu_ptr = load_main_menu(NULL, config_ptr->lang);
     show_main_menu(main_menu_ptr, config_ptr->lang, theme_ptr);
+
+    clear();
+    show_logo(theme_ptr, false, logo_ptr);
+
+    OptionsMenu* options_menu_ptr = load_options_menu(NULL, config_ptr->lang);
+    OptionsVariables* variables_ptr = load_options_variables(NULL, config_ptr);
+    show_options_menu(options_menu_ptr, variables_ptr, config_ptr->lang, theme_ptr);
 
     sleep(2);
 

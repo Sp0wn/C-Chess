@@ -22,6 +22,9 @@
 //Height of main menu
 #define MAIN_MENU_SIZE 5
 
+//Height of options menu
+#define OPTIONS_MENU_SIZE 4
+
 //Key codes
 #define ESC 27
 #define ENTER 10
@@ -239,12 +242,13 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
 
     //Adds attributes
     keypad(main_menu_win, TRUE);
-    box(main_menu_win, 0, 0);
 
     //Main menu loop
     option = 1;
     done = false;
     while(done == false) {
+        wclear(main_menu_win);
+        box(main_menu_win, 0, 0);
         //Starts printing all options
         for(i = 0; i < 5; i++) {
             //Checks if selected option equals line
@@ -387,6 +391,164 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     return optionsMenu;
 }
 
+//Displays the interactive options menu
+void show_options_menu(OptionsMenu* optionsMenu, OptionsVariables* vars, char* lang, GameTheme* theme) {
+    bool done;
+    int ch, option;
+    int width, height;
+    int i, x_offset, y_offset;
+    int var1, var2, var3, var4;
+
+    //Defines size and starting points of window
+    width = LOGO_W + 2*BOX_BORDER;
+    height = OPTIONS_MENU_SIZE + 2*BOX_BORDER;
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
+    y_offset = LOGO_H + 1;
+
+    //Creates window
+    WINDOW* options_menu_win = newwin(height, width, y_offset, x_offset);
+    if(options_menu_win == NULL) {
+        endwin();
+        fprintf(stderr, "Could not create new window\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if(has_colors() == true) {
+        wattron(options_menu_win, COLOR_PAIR(theme->color_text));
+    }
+
+    //Sets variables indexes
+    if(strcmp(vars->sel_var1, "en") == 0) {
+        var1 = 1;
+    } else if(strcmp(vars->sel_var1, "es") == 0) {
+        var1 = 2;
+    } else if(strcmp(vars->sel_var1, "de") == 0) {
+        var1 = 3;
+    }
+
+    if(strcmp(vars->sel_var2, "1") == 0) {
+        var2 = 1;
+    } else if(strcmp(vars->sel_var2, "2") == 0) {
+        var2 = 2;
+    } else if(strcmp(vars->sel_var2, "3") == 0) {
+        var2 = 3;
+    }
+
+    if(strcmp(vars->sel_var3, "ASCII") == 0) {
+        var3 = 1;
+    } else if(strcmp(vars->sel_var3, "UNICODE") == 0) {
+        var3 = 2;
+    }
+
+    if(strcmp(vars->sel_var4, "W") == 0) {
+        var4 = 1;
+    } else if(strcmp(vars->sel_var4, "B") == 0) {
+        var4 = 2;
+    }
+
+    //Adds attributes
+    keypad(options_menu_win, TRUE);
+
+    //Main menu loop
+    option = 1;
+    done = false;
+    while(done == false) {
+        wclear(options_menu_win);
+        box(options_menu_win, 0, 0);
+        //Starts printing all options
+        for(i = 0; i < 4; i++) {
+            //Checks if selected option equals line
+            if(option == (i + 1) && has_colors() == true) {
+                wattron(options_menu_win, A_STANDOUT);
+                mvwaddstr(options_menu_win, i + 1, 1, optionsMenu->opt_list[i]);
+                waddstr(options_menu_win, vars->vars_list[i]);
+                wattroff(options_menu_win, A_STANDOUT);
+                continue;
+            }
+            mvwaddstr(options_menu_win, i + 1, 1, optionsMenu->opt_list[i]);
+            waddstr(options_menu_win, vars->vars_list[i]);
+        }
+        wrefresh(options_menu_win);
+
+        //Waits for input
+        ch = wgetch(options_menu_win);
+
+        switch(ch) {
+            case ESC:
+                done = true;
+                break;
+
+            case KEY_UP:
+                option = (option == 1) ? 4 : option - 1;
+                break;
+
+            case KEY_DOWN:
+                option = (option == 4) ? 1 : option + 1;
+                break;
+
+            case ENTER:
+                done = true;
+                save_game_config(vars);
+                break;
+
+            case KEY_LEFT:
+                switch(option) {
+                    case 1:
+                        var1 = (var1 == 1) ? 3 : var1 - 1;
+                        strcpy(vars->sel_var1, vars->opt1_vars[var1 - 1]);
+                        break;
+
+                    case 2:
+                        var2 = (var2 == 1) ? 3 : var2 - 1;
+                        strcpy(vars->sel_var2, vars->opt2_vars[var2 - 1]);
+                        break;
+
+                    case 3:
+                        var3 = (var3 == 1) ? 2 : var3 - 1;
+                        strcpy(vars->sel_var3, vars->opt3_vars[var3 - 1]);
+                        break;
+
+                    case 4:
+                        var4 = (var4 == 1) ? 2 : var4 - 1;
+                        strcpy(vars->sel_var4, vars->opt4_vars[var4 - 1]);
+                        break;
+                }
+                break;
+
+            case KEY_RIGHT:
+                switch(option) {
+                    case 1:
+                        var1 = (var1 == 3) ? 1 : var1 + 1;
+                        strcpy(vars->sel_var1, vars->opt1_vars[var1 - 1]);
+                        break;
+
+                    case 2:
+                        var2 = (var2 == 3) ? 1 : var2 + 1;
+                        strcpy(vars->sel_var2, vars->opt2_vars[var2 - 1]);
+                        break;
+
+                    case 3:
+                        var3 = (var3 == 2) ? 1 : var3 + 1;
+                        strcpy(vars->sel_var3, vars->opt3_vars[var3 - 1]);
+                        break;
+
+                    case 4:
+                        var4 = (var4 == 2) ? 1 : var4 + 1;
+                        strcpy(vars->sel_var4, vars->opt4_vars[var4 - 1]);
+                        break;
+                }
+                break;
+        }
+    }
+
+    if(has_colors() == true) {
+        wattroff(options_menu_win, COLOR_PAIR(theme->color_text));
+    }
+
+    //Deletes allocated window
+    delwin(options_menu_win);
+}
+
 //Loads into memory the variables for the option menu
 OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* config) {
     int i, j;
@@ -510,17 +672,17 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
 }
 
 //Saves into storage the game configurations
-void save_game_config(GameConfig* config) {
+void save_game_config(OptionsVariables* vars) {
     FILE* fptr;
 
     //Opens file and handles errors
     fptr = open_file("/.config/C-Chess/options.cfg", "w");
 
     //Writes tokens into file
-    write_token("lang", config->lang, fptr);
-    write_token("theme", config->theme, fptr);
-    write_token("style", config->style, fptr);
-    write_token("side", config->side, fptr);
+    write_token("lang", vars->sel_var1, fptr);
+    write_token("theme", vars->sel_var2, fptr);
+    write_token("style", vars->sel_var3, fptr);
+    write_token("side", vars->sel_var4, fptr);
 
     //Closes gracefully the file
     fclose(fptr);
