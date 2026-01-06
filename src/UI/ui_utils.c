@@ -1,6 +1,7 @@
 //File guard
 #include "../../include/UI/ui_utils.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
@@ -66,4 +67,13 @@ void tokenize_config(char *key, char *value, char* buffer) {
         j++;
     }
     value[j] = '\0';
+}
+
+//Helper for writing tokens
+void write_token(char* key, char* value, FILE* fptr) {
+    //Writes a config line
+    fputs(key, fptr);
+    fputs("=", fptr);
+    fputs(value, fptr);
+    fputs("\n", fptr);
 }

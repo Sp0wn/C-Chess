@@ -517,18 +517,10 @@ void save_game_config(GameConfig* config) {
     fptr = open_file("/.config/C-Chess/options.cfg", "w");
 
     //Writes tokens into file
-    fputs("lang=", fptr);
-    fputs(config->lang, fptr);
-    fputs("\n", fptr);
-    fputs("theme=", fptr);
-    fputs(config->theme, fptr);
-    fputs("\n", fptr);
-    fputs("style=", fptr);
-    fputs(config->style, fptr);
-    fputs("\n", fptr);
-    fputs("side=", fptr);
-    fputs(config->side, fptr);
-    fputs("\n", fptr);
+    write_token("lang", config->lang, fptr);
+    write_token("theme", config->theme, fptr);
+    write_token("style", config->style, fptr);
+    write_token("side", config->side, fptr);
 
     //Closes gracefully the file
     fclose(fptr);

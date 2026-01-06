@@ -1,11 +1,11 @@
 #ifndef IO_H
 #define IO_H
 
-#include "../../include/UI/mainmenu.h"
-#include "../../include/UI/optionsmenu.h"
-#include "../../include/UI/optionsvariables.h"
-#include "../../include/UI/gameconfig.h"
-#include "../../include/UI/gametheme.h"
+#include "mainmenu.h"
+#include "optionsmenu.h"
+#include "optionsvariables.h"
+#include "gameconfig.h"
+#include "gametheme.h"
 
 #include <stdbool.h>
 

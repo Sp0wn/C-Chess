@@ -9,4 +9,6 @@ void init_config_tokens(char* key, char* value, char* section);
 
 void tokenize_config(char* key, char* value, char* buffer);
 
+void write_token(char* key, char* value, FILE* fptr);
+
 #endif
