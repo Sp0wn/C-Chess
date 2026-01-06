@@ -33,7 +33,7 @@ char* load_logo(void) {
     char* logo;
 
     //Opens file and handles errors
-    fptr = open_file("/.C-Chess/logo.txt");
+    fptr = open_file("/.C-Chess/logo.txt", "r");
 
     //Calculates file size
     fseek(fptr, 0, SEEK_END);
@@ -123,7 +123,7 @@ MainMenu* load_main_menu(MainMenu* old, char* lang) {
     free(old);
 
     //Opens file and handles errors
-    fptr = open_file("/.C-Chess/main_menu.ini");
+    fptr = open_file("/.C-Chess/main_menu.ini", "r");
 
     //Allocates memory for the struct
     mainMenu = malloc(sizeof(MainMenu));
@@ -302,7 +302,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang) {
     free(old);
 
     //Opens file and handles errors
-    fptr = open_file("/.C-Chess/options_menu.ini");
+    fptr = open_file("/.C-Chess/options_menu.ini", "r");
 
     //Allocates memory for the struct
     optionsMenu = malloc(sizeof(OptionsMenu));
@@ -398,7 +398,7 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
     free(old);
 
     //Opens file and handles errors
-    fptr = open_file("/.C-Chess/options_variables.ini");
+    fptr = open_file("/.C-Chess/options_variables.ini", "r");
 
     //Allocates memory for the struct
     optionsVariables = malloc(sizeof(OptionsVariables));
@@ -509,6 +509,31 @@ OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* conf
     return optionsVariables;
 }
 
+//Saves into storage the game configurations
+void save_game_config(GameConfig* config) {
+    FILE* fptr;
+
+    //Opens file and handles errors
+    fptr = open_file("/.config/C-Chess/options.cfg", "w");
+
+    //Writes tokens into file
+    fputs("lang=", fptr);
+    fputs(config->lang, fptr);
+    fputs("\n", fptr);
+    fputs("theme=", fptr);
+    fputs(config->theme, fptr);
+    fputs("\n", fptr);
+    fputs("style=", fptr);
+    fputs(config->style, fptr);
+    fputs("\n", fptr);
+    fputs("side=", fptr);
+    fputs(config->side, fptr);
+    fputs("\n", fptr);
+
+    //Closes gracefully the file
+    fclose(fptr);
+}
+
 //Loads into memory the game configurations
 GameConfig* load_game_config(GameConfig* old) {
     int i;
@@ -520,7 +545,7 @@ GameConfig* load_game_config(GameConfig* old) {
     free(old);
 
     //Opens file and handles errors
-    fptr = open_file("/.config/C-Chess/options.cfg");
+    fptr = open_file("/.config/C-Chess/options.cfg", "r");
     
     //Allocates memory for the struct
     gameConfig = malloc(sizeof(GameConfig));

@@ -19,6 +19,7 @@ OptionsMenu* load_options_menu(OptionsMenu* old, char* lang);
 
 OptionsVariables* load_options_variables(OptionsVariables* old, GameConfig* config);
 
+void save_game_config(GameConfig* config);
 GameConfig* load_game_config(GameConfig* old);
 
 GameTheme* load_game_theme(GameTheme* old, char* sel_theme);

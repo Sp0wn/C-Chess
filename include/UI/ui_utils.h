@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-FILE* open_file(char* file);
+FILE* open_file(char* file, char* flag);
 
 void init_config_tokens(char* key, char* value, char* section);
 

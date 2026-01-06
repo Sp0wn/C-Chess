@@ -5,7 +5,8 @@
 #include <string.h>
 #include <ncurses.h>
 
-FILE* open_file(char* file) {
+//Wrapper for handling files
+FILE* open_file(char* file, char* flag) {
     FILE* fptr;
     char file_path[64];
 
@@ -27,7 +28,7 @@ FILE* open_file(char* file) {
     strncat(file_path, file, 32);
 
     //Tries to open the file
-    fptr = fopen(file_path, "r");
+    fptr = fopen(file_path, flag);
     if(fptr == NULL) {
         if(stdscr != NULL) {
             endwin();
@@ -39,6 +40,7 @@ FILE* open_file(char* file) {
     return fptr;
 }
 
+//Helper for initializing tokens arrays
 void init_config_tokens(char* key, char* value, char* section) {
     //Sets to zero all bytes
     memset(key, 0, 32);
@@ -46,6 +48,7 @@ void init_config_tokens(char* key, char* value, char* section) {
     memset(section, 0, 16);
 }
 
+//Helper for parsing tokens
 void tokenize_config(char *key, char *value, char* buffer) {
     int i, j;
     i = j = 0;
