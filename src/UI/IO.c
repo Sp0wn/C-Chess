@@ -417,34 +417,7 @@ void show_options_menu(OptionsMenu* optionsMenu, OptionsVariables* vars, char* l
         wattron(options_menu_win, COLOR_PAIR(theme->color_text));
     }
 
-    //Sets variables indexes
-    if(strcmp(vars->sel_var1, "en") == 0) {
-        var1 = 1;
-    } else if(strcmp(vars->sel_var1, "es") == 0) {
-        var1 = 2;
-    } else if(strcmp(vars->sel_var1, "de") == 0) {
-        var1 = 3;
-    }
-
-    if(strcmp(vars->sel_var2, "1") == 0) {
-        var2 = 1;
-    } else if(strcmp(vars->sel_var2, "2") == 0) {
-        var2 = 2;
-    } else if(strcmp(vars->sel_var2, "3") == 0) {
-        var2 = 3;
-    }
-
-    if(strcmp(vars->sel_var3, "ASCII") == 0) {
-        var3 = 1;
-    } else if(strcmp(vars->sel_var3, "UNICODE") == 0) {
-        var3 = 2;
-    }
-
-    if(strcmp(vars->sel_var4, "W") == 0) {
-        var4 = 1;
-    } else if(strcmp(vars->sel_var4, "B") == 0) {
-        var4 = 2;
-    }
+    init_vars_indexes(vars, &var1, &var2, &var3, &var4);
 
     //Adds attributes
     keypad(options_menu_win, TRUE);

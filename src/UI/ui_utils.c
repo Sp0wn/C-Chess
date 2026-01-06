@@ -49,6 +49,38 @@ void init_config_tokens(char* key, char* value, char* section) {
     memset(section, 0, 16);
 }
 
+void init_vars_indexes(OptionsVariables* vars, int* var1, int* var2, int* var3, int* var4) {
+    //Sets variables indexes
+    if(strcmp(vars->sel_var1, "en") == 0) {
+        *var1 = 1;
+    } else if(strcmp(vars->sel_var1, "es") == 0) {
+        *var1 = 2;
+    } else if(strcmp(vars->sel_var1, "de") == 0) {
+        *var1 = 3;
+    }
+
+    if(strcmp(vars->sel_var2, "1") == 0) {
+        *var2 = 1;
+    } else if(strcmp(vars->sel_var2, "2") == 0) {
+        *var2 = 2;
+    } else if(strcmp(vars->sel_var2, "3") == 0) {
+        *var2 = 3;
+    }
+
+    if(strcmp(vars->sel_var3, "ASCII") == 0) {
+        *var3 = 1;
+    } else if(strcmp(vars->sel_var3, "UNICODE") == 0) {
+        *var3 = 2;
+    }
+
+    if(strcmp(vars->sel_var4, "W") == 0) {
+        *var4 = 1;
+    } else if(strcmp(vars->sel_var4, "B") == 0) {
+        *var4 = 2;
+    }
+
+}
+
 //Helper for parsing tokens
 void tokenize_config(char *key, char *value, char* buffer) {
     int i, j;
