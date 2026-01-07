@@ -1,7 +1,6 @@
 #include "include/UI/IO.h"
-#include "include/UI/mainmenu.h"
-#include "include/UI/optionsmenu.h"
-#include "include/UI/optionsvariables.h"
+
+#include "include/Game/set.h"
 
 #include <stdbool.h>
 #include <unistd.h>
@@ -22,6 +21,11 @@
 #define BLACK 16
 
 int main(void) {
+    Board board;
+    Board* board_ptr;
+    board_ptr = &board;
+    set_pieces(board_ptr);
+
     //Starts main window
     initscr();
     raw();
@@ -60,5 +64,6 @@ int main(void) {
     sleep(2);
 
     endwin();
+
     return 0;
 } 
