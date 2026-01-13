@@ -9,6 +9,23 @@
 
 #include <stdbool.h>
 
+//Maximum dimensions of logo
+#define LOGO_WIDTH 54
+#define LOGO_HEIGHT 6
+
+//Size of borders
+#define BOX_BORDER 1
+
+//Height of main menu
+#define MAIN_MENU_SIZE 5
+
+//Height of options menu
+#define OPTIONS_MENU_SIZE 4
+
+//Key codes
+#define ESC 27
+#define ENTER 10
+
 char* load_logo(void);
 void show_logo(GameTheme* theme, bool do_animation, char* logo);
 

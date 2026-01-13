@@ -1,6 +1,7 @@
 //File guard
 #include "../../include/UI/ui_utils.h"
 
+//Libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +50,7 @@ void init_config_tokens(char* key, char* value, char* section) {
     memset(section, 0, 16);
 }
 
+//Helper for initializing vars struct indexes
 void init_vars_indexes(OptionsVariables* vars, int* var1, int* var2, int* var3, int* var4) {
     //Sets variables indexes
     if(strcmp(vars->sel_var1, "en") == 0) {
@@ -108,4 +110,18 @@ void write_token(char* key, char* value, FILE* fptr) {
     fputs("=", fptr);
     fputs(value, fptr);
     fputs("\n", fptr);
+}
+
+//Wrapper for starting color attribute
+void turn_on_color(WINDOW* win, int color_code) {
+    if(has_colors() == true) {
+        wattron(win, COLOR_PAIR(color_code));
+    }
+}
+
+//Wrapper for ending color attribute
+void turn_off_color(WINDOW* win, int color_code) {
+    if(has_colors() == true) {
+        wattroff(win, COLOR_PAIR(color_code));
+    }
 }

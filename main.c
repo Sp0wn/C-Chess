@@ -1,10 +1,16 @@
+//Interface functions
 #include "include/UI/IO.h"
+#include "include/UI/board.h"
 
+//Game functions
 #include "include/Game/set.h"
 
+//Standard Libraries
 #include <stdbool.h>
 #include <unistd.h>
+#include <locale.h>
 
+//Main UI library
 #include <ncurses.h>
 
 //Color codes
@@ -21,6 +27,9 @@
 #define BLACK 16
 
 int main(void) {
+    char* locale;
+    locale = setlocale(LC_ALL, "");
+
     Board board;
     Board* board_ptr;
     board_ptr = &board;
@@ -61,7 +70,12 @@ int main(void) {
     OptionsVariables* variables_ptr = load_options_variables(NULL, config_ptr);
     show_options_menu(options_menu_ptr, variables_ptr, config_ptr->lang, theme_ptr);
 
-    sleep(2);
+    clear();
+    refresh();
+
+    show_board(board_ptr, config_ptr, theme_ptr);
+
+    sleep(10);
 
     endwin();
 

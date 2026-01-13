@@ -12,23 +12,6 @@
 #include <unistd.h>
 #include <ncurses.h>
 
-//Maximum dimensions of logo
-#define LOGO_H 6
-#define LOGO_W 54
-
-//Size of borders
-#define BOX_BORDER 1
-
-//Height of main menu
-#define MAIN_MENU_SIZE 5
-
-//Height of options menu
-#define OPTIONS_MENU_SIZE 4
-
-//Key codes
-#define ESC 27
-#define ENTER 10
-
 //Loads the logo dynamically
 char* load_logo(void) {
     long size;
@@ -77,13 +60,11 @@ void show_logo(GameTheme* theme, bool do_animation, char* logo) {
     int i, x, y, x_offset;
 
     //Gets the starting point for the logo
-    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_WIDTH / 2);
 
     clear();
 
-    if(has_colors() == true) {
-        attron(COLOR_PAIR(theme->color_white));
-    }
+    turn_on_color(stdscr, theme->color_white);
 
     i = x = 0;
     //Prints each line
@@ -108,9 +89,7 @@ void show_logo(GameTheme* theme, bool do_animation, char* logo) {
         }
     }
 
-    if(has_colors() == true) {
-        attroff(COLOR_PAIR(theme->color_white));
-    }
+    turn_off_color(stdscr, theme->color_white);
 
     refresh();
 }
@@ -220,25 +199,24 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
     bool done;
     int ch, option;
     int width, height;
+    WINDOW* main_menu_win;
     int i, x_offset, y_offset;
 
     //Defines size and starting points of window
-    width = LOGO_W + 2*BOX_BORDER;
+    width = LOGO_WIDTH + 2*BOX_BORDER;
     height = MAIN_MENU_SIZE + 2*BOX_BORDER;
-    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
-    y_offset = LOGO_H + 1;
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_WIDTH / 2);
+    y_offset = LOGO_HEIGHT + 1;
 
     //Creates window
-    WINDOW* main_menu_win = newwin(height, width, y_offset, x_offset);
+    main_menu_win = newwin(height, width, y_offset, x_offset);
     if(main_menu_win == NULL) {
         endwin();
         fprintf(stderr, "Could not create new window\n");
         exit(EXIT_FAILURE);
     }
 
-    if(has_colors() == true) {
-        wattron(main_menu_win, COLOR_PAIR(theme->color_text));
-    }
+    turn_on_color(main_menu_win, theme->color_text);
 
     //Adds attributes
     keypad(main_menu_win, TRUE);
@@ -285,9 +263,7 @@ int show_main_menu(MainMenu* mainMenu, char* lang, GameTheme* theme) {
         }
     }
 
-    if(has_colors() == true) {
-        wattroff(main_menu_win, COLOR_PAIR(theme->color_text));
-    }
+    turn_off_color(main_menu_win, theme->color_text);
 
     //Deletes allocated window
     delwin(main_menu_win);
@@ -396,26 +372,24 @@ void show_options_menu(OptionsMenu* optionsMenu, OptionsVariables* vars, char* l
     bool done;
     int ch, option;
     int width, height;
+    WINDOW* options_menu_win;
     int i, x_offset, y_offset;
     int var1, var2, var3, var4;
-
     //Defines size and starting points of window
-    width = LOGO_W + 2*BOX_BORDER;
+    width = LOGO_WIDTH + 2*BOX_BORDER;
     height = OPTIONS_MENU_SIZE + 2*BOX_BORDER;
-    x_offset = (getmaxx(stdscr) / 2) - (LOGO_W / 2);
-    y_offset = LOGO_H + 1;
+    x_offset = (getmaxx(stdscr) / 2) - (LOGO_WIDTH / 2);
+    y_offset = LOGO_HEIGHT + 1;
 
     //Creates window
-    WINDOW* options_menu_win = newwin(height, width, y_offset, x_offset);
+    options_menu_win = newwin(height, width, y_offset, x_offset);
     if(options_menu_win == NULL) {
         endwin();
         fprintf(stderr, "Could not create new window\n");
         exit(EXIT_FAILURE);
     }
 
-    if(has_colors() == true) {
-        wattron(options_menu_win, COLOR_PAIR(theme->color_text));
-    }
+    turn_on_color(options_menu_win, theme->color_text);
 
     init_vars_indexes(vars, &var1, &var2, &var3, &var4);
 
@@ -514,9 +488,7 @@ void show_options_menu(OptionsMenu* optionsMenu, OptionsVariables* vars, char* l
         }
     }
 
-    if(has_colors() == true) {
-        wattroff(options_menu_win, COLOR_PAIR(theme->color_text));
-    }
+    turn_off_color(options_menu_win, theme->color_text);
 
     //Deletes allocated window
     delwin(options_menu_win);
