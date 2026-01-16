@@ -1,7 +1,6 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
 
-#include "gametheme.h"
 #include "optionsvariables.h"
 
 #include <stdio.h>
