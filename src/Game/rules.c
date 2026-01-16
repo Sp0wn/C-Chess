@@ -6,8 +6,8 @@
 #include <stdlib.h>
 
 bool pawn_move(int* origin_xy, int* target_xy, Board* board) {
-    char move_piece = (*board)[target_xy[1]][target_xy[0]].name;
-    char move_color = (*board)[target_xy[1]][target_xy[0]].color;
+    char target_piece = (*board)[target_xy[1]][target_xy[0]].name;
+    char target_color = (*board)[target_xy[1]][target_xy[0]].color;
     char origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
     char origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
 
@@ -15,7 +15,7 @@ bool pawn_move(int* origin_xy, int* target_xy, Board* board) {
     int y_diff = abs(target_xy[1] - origin_xy[1]);
 
     //Can not move to a square with a friendly piece
-    if(move_piece != ' ' && move_color == origin_color) {
+    if(target_piece != ' ' && target_color == origin_color) {
         return false;
     }
 
@@ -27,7 +27,7 @@ bool pawn_move(int* origin_xy, int* target_xy, Board* board) {
     }
 
     //Can capture close diagonal squares
-    if((x_diff == 1 && y_diff == 1) && move_piece != ' ') {
+    if((x_diff == 1 && y_diff == 1) && target_piece != ' ') {
         return true;
     } 
 
@@ -52,9 +52,58 @@ bool pawn_move(int* origin_xy, int* target_xy, Board* board) {
     return true;
 }
 
+bool rook_move(int* origin_xy, int* target_xy, Board* board) {
+    char target_piece = (*board)[target_xy[1]][target_xy[0]].name;
+    char target_color = (*board)[target_xy[1]][target_xy[0]].color;
+    char origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
+    char origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
+
+    int diff, dir, trace;
+
+    //Can not move to a square with a friendly piece
+    if(target_piece != ' ' && target_color == origin_color) {
+        return false;
+    }
+
+    //Can move horizontally
+    if(target_xy[0] != origin_xy[0] && target_xy[1] == origin_xy[1]) {
+        diff = abs(origin_xy[0] - target_xy[0]);
+        dir = (origin_xy[0] - target_xy[0]) / diff;
+
+        //Trace line
+        for(diff = diff; diff > 1; diff--) {
+            trace = target_xy[0] - (diff - 1) * dir;
+            
+            //Can not go across pieces
+            if((*board)[target_xy[1]][trace].name != ' ') {
+                return false;
+            }
+        }
+        return true;
+
+    //Can move vertically
+    } else if(target_xy[1] != origin_xy[1] && target_xy[0] == origin_xy[0]) {
+        diff = abs(origin_xy[1] - target_xy[1]);
+        dir = (origin_xy[1] - target_xy[1]) / diff;
+
+        for(diff = diff; diff > 1; diff--) {
+            trace = target_xy[1] - (diff - 1) * dir;
+            
+            if((*board)[trace][target_xy[0]].name != ' ') {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
 bool bishop_move(int* origin_xy, int* target_xy, Board* board) {
-    char move_piece = (*board)[target_xy[1]][target_xy[0]].name;
-    char move_color = (*board)[target_xy[1]][target_xy[0]].color;
+    char target_piece = (*board)[target_xy[1]][target_xy[0]].name;
+    char target_color = (*board)[target_xy[1]][target_xy[0]].color;
     char origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
     char origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
  
@@ -67,12 +116,13 @@ bool bishop_move(int* origin_xy, int* target_xy, Board* board) {
     int diff, trace_xy[2];
 
     //Can not move to a square with a friendly piece
-    if(move_piece != ' ' && move_color == origin_color) {
+    if(target_piece != ' ' && target_color == origin_color) {
         return false;
     }
 
     //Can move in diagonals
     if(x_diff == y_diff) {
+        //Trace diagonal
         for(diff = x_diff; diff > 1; diff--) {
             trace_xy[0] = target_xy[0] - (diff - 1) * x_dir;
             trace_xy[1] = target_xy[1] - (diff - 1) * y_dir;
@@ -91,8 +141,8 @@ bool bishop_move(int* origin_xy, int* target_xy, Board* board) {
 }
 
 bool knight_move(int* origin_xy, int* target_xy, Board* board) {
-    char move_piece = (*board)[target_xy[1]][target_xy[0]].name;
-    char move_color = (*board)[target_xy[1]][target_xy[0]].color;
+    char target_piece = (*board)[target_xy[1]][target_xy[0]].name;
+    char target_color = (*board)[target_xy[1]][target_xy[0]].color;
     char origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
     char origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
  
@@ -100,7 +150,7 @@ bool knight_move(int* origin_xy, int* target_xy, Board* board) {
     int y_diff = abs(target_xy[1] - origin_xy[1]);
 
     //Can not move to a square with a friendly piece
-    if(move_piece != ' ' && move_color == origin_color) {
+    if(target_piece != ' ' && target_color == origin_color) {
         return false;
     }
 
