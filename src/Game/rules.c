@@ -51,3 +51,29 @@ bool pawn_move(int* origin_xy, int* move_xy, Board* board) {
 
     return true;
 }
+
+bool knight_move(int* origin_xy, int* move_xy, Board* board) {
+    char move_piece = (*board)[move_xy[1]][move_xy[0]].name;
+    char move_color = (*board)[move_xy[1]][move_xy[0]].color;
+    char origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
+    char origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
+ 
+    int x_diff = abs(move_xy[0] - origin_xy[0]);
+    int y_diff = abs(move_xy[1] - origin_xy[1]);
+
+    //Can not move to a square with a friendly piece
+    if(move_piece != ' ' && move_color == origin_color) {
+        return false;
+    }
+
+    //Can move in L
+    if(x_diff == 1 && y_diff == 2) {
+        return true;
+    } else if(x_diff == 2 && y_diff == 1) {
+        return true;
+    } else {
+        return false;
+    }
+
+    return true;
+}
