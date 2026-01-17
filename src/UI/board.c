@@ -52,7 +52,7 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
             i++;
 
             for(column = 0; column < 8; column++) {
-                wprintw(board_win, "| %lc ", (*board)[row][column].name);
+                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
             }
             waddch(board_win, '|');
 
@@ -75,7 +75,7 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
             i++;
 
             for(column = 7; column >= 0; column--) {
-                wprintw(board_win, "| %lc ", (*board)[row][column].name);
+                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
             }
             waddch(board_win, '|');
 
@@ -93,6 +93,33 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
     }
 
     wrefresh(board_win);
+}
+
+int show_piece(Board* board, int row, int column, char* style) {
+    int piece, color;
+
+    piece = (*board)[row][column].name;
+    color = (*board)[row][column].color;
+
+    if(strncmp(style, "UNICODE", 8) == 0) {
+        if(piece == 'p' || piece == 'P') {
+            piece = (color == 'w') ? 0x2659 : 0x265F; 
+        } else if(piece == 'n' || piece == 'N') {
+            piece = (color == 'w') ? 0x2658 : 0x265E;
+        } else if(piece == 'b' || piece == 'B') {
+            piece = (color == 'w') ? 0x2657 : 0x265D;
+        } else if(piece == 'r' || piece == 'R') {
+            piece = (color == 'w') ? 0x2656 : 0x265C;
+        } else if(piece == 'q' || piece == 'Q') {
+            piece = (color == 'w') ? 0x2655 : 0x265B;
+        } else if(piece == 'k' || piece == 'K') {
+            piece = (color == 'w') ? 0x2654 : 0x265A;
+        } else if(piece == ' ' || piece == ' ') {
+            piece = 32;
+        }
+    }
+
+    return piece;
 }
 
 int* get_move(int* old_xy, char* side) {

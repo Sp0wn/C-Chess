@@ -16,6 +16,7 @@
 #define BOARD_HEIGHT 18
 
 void show_board(Board* board, GameConfig* config, GameTheme* theme);
+int show_piece(Board* board, int row, int column, char* style);
 
 int* get_move(int* old_xy, char* side);
 
