@@ -101,6 +101,17 @@ bool rook_move(int* origin_xy, int* target_xy, Board* board) {
     return true;
 }
 
+bool queen_move(int* origin_xy, int* target_xy, Board* board) {
+    if(bishop_move(origin_xy, target_xy, board)) {
+        return true;
+    } else if(rook_move(origin_xy, target_xy, board)) {
+        return true;
+    } else {
+        return false;
+    }
+
+    return true;
+}
 bool bishop_move(int* origin_xy, int* target_xy, Board* board) {
     char target_piece = (*board)[target_xy[1]][target_xy[0]].name;
     char target_color = (*board)[target_xy[1]][target_xy[0]].color;
