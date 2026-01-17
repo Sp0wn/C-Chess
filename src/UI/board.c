@@ -4,9 +4,6 @@
 //References
 #include "../../include/UI/IO.h"
 
-//Include util functions
-#include "../../include/UI/ui_utils.h"
-
 //Libraries
 #include <stdlib.h>
 #include <ncurses.h>
@@ -132,6 +129,13 @@ int* get_move(int* old_xy, char* side) {
 
     //Allocates memory for the coordinates
     int* xy = malloc(2 * sizeof(int));
+    if(xy == NULL) {
+        if(stdscr != NULL) {
+            endwin();
+        }
+        perror("Could not allocate memory");
+        exit(EXIT_FAILURE);
+    }
 
     //Gets board limits
     min_x = (getmaxx(stdscr) / 2) - ((BOARD_WIDTH / 2) - 4);

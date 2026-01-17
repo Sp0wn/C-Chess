@@ -1,6 +1,7 @@
 #ifndef RULES_H
 #define RULES_H
 
+#include "moves.h"
 #include "piece.h"
 
 #include <stdbool.h>
@@ -10,5 +11,7 @@ bool rook_move(int* origin_xy, int* target_xy, Board* board);
 bool queen_move(int* origin_xy, int* target_xy, Board* board);
 bool bishop_move(int* origin_xy, int* target_xy, Board* board);
 bool knight_move(int* origin_xy, int* target_xy, Board* board);
+
+Moves* legal_moves(int* origin_xy, Board* board, Moves* old_moves);
 
 #endif
