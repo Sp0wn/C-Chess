@@ -7,6 +7,7 @@
 
 //Standard Libraries
 #include <stdbool.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <locale.h>
 
@@ -75,7 +76,7 @@ int main(void) {
 
     show_board(board_ptr, config_ptr, theme_ptr);
 
-    sleep(10);
+    int* xy = get_move(NULL, config_ptr->side);
 
     endwin();
 

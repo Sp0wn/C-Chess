@@ -94,3 +94,67 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
 
     wrefresh(board_win);
 }
+
+int* get_move(int* old_xy, char* side) {
+    MEVENT event;
+    int row, column, ch;
+    int max_x, min_x, max_y, min_y;
+
+    //Deallocates old coordinates
+    free(old_xy);
+
+    //Allocates memory for the coordinates
+    int* xy = malloc(2 * sizeof(int));
+
+    //Gets board limits
+    min_x = (getmaxx(stdscr) / 2) - ((BOARD_WIDTH / 2) - 4);
+    max_x = (getmaxx(stdscr) / 2) + ((BOARD_WIDTH / 2) - 2);
+    min_y = LOGO_HEIGHT + 2;
+    max_y = min_y + BOARD_HEIGHT - 4;
+
+    //Enables mouse input
+    keypad(stdscr, TRUE);
+    mousemask(BUTTON1_CLICKED, NULL);
+
+    //Waits for input
+    ch = getch();
+    if(getmouse(&event) == OK && event.bstate &BUTTON1_CLICKED) {
+        //Checks if in range of board limits
+        if(event.x > max_x || event.x < min_x || 
+                event.y > max_y || event.y < min_y) {
+            return NULL;
+        }
+
+        if(strncmp(side, "W", 2) == 0) {
+            for(row = 0; row < 8; row++) {
+                for(column = 0; column < 8; column++) {
+                    //Translates screen coordinates to board coordinates
+                    xy[1] = (event.y - min_y) - row;
+                    xy[0] = ((event.x - min_x) - 1) / 2 - column;
+
+                    if(xy[1] == row && xy[0] == column) {
+                        //Reverses column
+                        xy[1] = (xy[1] - 7) * -1;
+                        return xy;
+                    }
+                }
+            }
+
+        }  else {
+            for(row = 0; row < 8; row++) {
+                for(column = 0; column < 8; column++) {
+                    xy[1] = (event.y - min_y) - row;
+                    xy[0] = ((event.x - min_x) - 1) / 2 - column;
+
+                    if(xy[1] == row && xy[0] == column) {
+                        //Reverses row
+                        xy[0] = (xy[0] - 7) * -1;
+                        return xy;
+                    }
+                }
+            }
+        }
+    }
+
+    return NULL;
+}

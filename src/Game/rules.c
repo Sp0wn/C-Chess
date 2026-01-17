@@ -70,7 +70,7 @@ bool rook_move(int* origin_xy, int* target_xy, Board* board) {
         diff = abs(origin_xy[0] - target_xy[0]);
         dir = (origin_xy[0] - target_xy[0]) / diff;
 
-        //Trace line
+        //Traces line
         for(diff = diff; diff > 1; diff--) {
             trace = target_xy[0] - (diff - 1) * dir;
             
@@ -133,7 +133,7 @@ bool bishop_move(int* origin_xy, int* target_xy, Board* board) {
 
     //Can move in diagonals
     if(x_diff == y_diff) {
-        //Trace diagonal
+        //Traces diagonal
         for(diff = x_diff; diff > 1; diff--) {
             trace_xy[0] = target_xy[0] - (diff - 1) * x_dir;
             trace_xy[1] = target_xy[1] - (diff - 1) * y_dir;

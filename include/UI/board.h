@@ -17,4 +17,6 @@
 
 void show_board(Board* board, GameConfig* config, GameTheme* theme);
 
+int* get_move(int* old_xy, char* side);
+
 #endif
