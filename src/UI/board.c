@@ -5,6 +5,7 @@
 #include "../../include/UI/IO.h"
 
 //Libraries
+#include <stdbool.h>
 #include <stdlib.h>
 #include <ncurses.h>
 #include <string.h>
@@ -188,4 +189,44 @@ int* get_move(int* old_xy, char* side) {
     }
 
     return NULL;
+}
+
+bool make_move(Board* board, int* origin_xy, int* target_xy, Moves* moves) {
+    int* move_xy;
+    int moves_size;
+    char origin_piece, origin_color;
+
+    origin_piece = (*board)[origin_xy[1]][origin_xy[0]].name;
+    origin_color = (*board)[origin_xy[1]][origin_xy[0]].color;
+
+    //Checks if struct is not empty
+    if(moves == NULL) {
+        return false;
+    }
+
+    //Assigns number of moves to local variable
+    if(moves->size > 0) {
+        moves_size = moves->size;
+    } else {
+        return false;
+    }
+
+    //Checks if target move is not empty
+    if(target_xy == NULL) {
+        return false;
+    }
+
+    while(moves_size > 0) {
+        move_xy = moves->list[moves_size - 1];
+        if((target_xy[0] == move_xy[0]) && (target_xy[1] == move_xy[1])) {
+            (*board)[target_xy[1]][target_xy[0]].name = origin_piece;
+            (*board)[target_xy[1]][target_xy[0]].color = origin_color;
+            (*board)[origin_xy[1]][origin_xy[0]].name = ' ';
+            (*board)[origin_xy[1]][origin_xy[0]].color = '\0';
+            return true;
+        }
+        moves_size--;
+    }
+
+    return false;
 }

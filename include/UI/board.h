@@ -5,6 +5,9 @@
 #include "gameconfig.h"
 
 #include "../../include/Game/piece.h"
+#include "../../include/Game/moves.h"
+
+#include <stdbool.h>
 
 //Board codes
 #define BOARD_UP "_______________________________"
@@ -19,5 +22,6 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme);
 int show_piece(Board* board, int row, int column, char* style);
 
 int* get_move(int* old_xy, char* side);
+bool make_move(Board* board, int* origin_xy, int* target_xy, Moves* moves);
 
 #endif

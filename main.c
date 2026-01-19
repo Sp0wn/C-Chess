@@ -76,10 +76,17 @@ int main(void) {
 
     show_board(board_ptr, config_ptr, theme_ptr);
 
-    int* xy = get_move(NULL, config_ptr->side);
+    int* xy1 = get_move(NULL, config_ptr->side);
+    int* xy2 = get_move(NULL, config_ptr->side);
     
-    Moves* moves = legal_moves(xy, board_ptr, NULL);
+    Moves* moves = legal_moves(xy1, board_ptr, NULL);
+
+    make_move(board_ptr, xy1, xy2, moves);
     
+    show_board(board_ptr, config_ptr, theme_ptr);
+
+    get_move(NULL, config_ptr->side);
+
     endwin();
 
     return 0;

@@ -57,6 +57,8 @@ void set_pieces_color(Board* board) {
                 (*board)[row][column].color = 'w';
             } else if (row == 6 || row == 7) {
                 (*board)[row][column].color = 'b';
+            } else {
+                (*board)[row][column].color = '\0';
             }
         }
     }
