@@ -54,38 +54,8 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme, Moves* moves
             i++;
 
             for(column = 0; column < 8; column++) {
-                if(moves != NULL) {
-                    //Loops through possible moves
-                    for(point = 0; point < moves->size; point++) {
-                        move_xy = moves->list[point];
-
-                        //Checks if array equals current square
-                        if(!(row == move_xy[1] && column == move_xy[0])) {
-                            //Prints default color
-                            if(point == (moves->size - 1)) {
-                                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
-                            }
-                            continue;
-                        }
-
-                        //Prints possible moves
-                        if((*board)[row][column].name == ' ') {
-                            wprintw(board_win, "| ");
-                            turn_on_color(board_win, theme->color_black);
-                            wprintw(board_win, "○ ");
-                            turn_off_color(board_win, theme->color_black);
-                            break;
-
-                        //Highlights capturable pieces
-                        } else if((*board)[row][column].name != ' ') {
-                            wprintw(board_win, "| ");
-                            turn_on_color(board_win, theme->color_black);
-                            wprintw(board_win, "%lc ", show_piece(board, row, column, config->style));
-                            turn_off_color(board_win, theme->color_black);
-                            break;
-                        }
-                    }
-
+                if(moves != NULL) {   
+                    show_moves(board, config, theme, board_win, moves, row, column);
                 } else {
                     wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
                 }
@@ -112,37 +82,7 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme, Moves* moves
 
             for(column = 7; column >= 0; column--) {
                 if(moves != NULL) {
-                    //Loops through possible moves
-                    for(point = 0; point < moves->size; point++) {
-                        move_xy = moves->list[point];
-
-                        //Checks if array equals current square
-                        if(!(row == move_xy[1] && column == move_xy[0])) {
-                            //Prints default color
-                            if(point == (moves->size - 1)) {
-                                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
-                            }
-                            continue;
-                        }
-
-                        //Prints possible moves
-                        if((*board)[row][column].name == ' ') {
-                            wprintw(board_win, "| ");
-                            turn_on_color(board_win, theme->color_black);
-                            wprintw(board_win, "○ ");
-                            turn_off_color(board_win, theme->color_black);
-                            break;
-
-                        //Highlights capturable pieces
-                        } else if((*board)[row][column].name != ' ') {
-                            wprintw(board_win, "| ");
-                            turn_on_color(board_win, theme->color_black);
-                            wprintw(board_win, "%lc ", show_piece(board, row, column, config->style));
-                            turn_off_color(board_win, theme->color_black);
-                            break;
-                        }
-                    }
-
+                    show_moves(board, config, theme, board_win, moves, row, column);
                 } else {
                     wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
                 }
@@ -190,6 +130,42 @@ int show_piece(Board* board, int row, int column, char* style) {
     }
 
     return piece;
+}
+
+void show_moves(Board* board, GameConfig* config, GameTheme* theme, WINDOW* win, Moves* moves, int row, int column) {
+    int point;
+    int* move_xy;
+
+    //Loops through possible moves
+    for(point = 0; point < moves->size; point++) {
+        move_xy = moves->list[point];
+
+        //Checks if array equals current square
+        if(!(row == move_xy[1] && column == move_xy[0])) {
+            //Prints default color
+            if(point == (moves->size - 1)) {
+                wprintw(win, "| %lc ", show_piece(board, row, column, config->style));
+            }
+            continue;
+        }
+
+        //Prints possible moves
+        if((*board)[row][column].name == ' ') {
+            wprintw(win, "| ");
+            turn_on_color(win, theme->color_black);
+            wprintw(win, "○ ");
+            turn_off_color(win, theme->color_black);
+            break;
+
+        //Highlights capturable pieces
+        } else if((*board)[row][column].name != ' ') {
+            wprintw(win, "| ");
+            turn_on_color(win, theme->color_black);
+            wprintw(win, "%lc ", show_piece(board, row, column, config->style));
+            turn_off_color(win, theme->color_black);
+            break;
+        }
+    }
 }
 
 int* get_move(int* old_xy, char* side) {
