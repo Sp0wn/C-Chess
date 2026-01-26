@@ -4,6 +4,9 @@
 //References
 #include "../../include/UI/IO.h"
 
+//Include util functions
+#include "../../include/UI/ui_utils.h"
+
 //Libraries
 #include <stdbool.h>
 #include <stdlib.h>
@@ -21,10 +24,11 @@ const char column_labels[8] = {
     'h'
 };
 
-void show_board(Board* board, GameConfig* config, GameTheme* theme) {
+void show_board(Board* board, GameConfig* config, GameTheme* theme, Moves* moves) {
+    int* move_xy;
     WINDOW* board_win;
-    int i, row, column;
     int x_offset, y_offset;
+    int i, row, column, point;
     
     //Defines starting points of window
     y_offset = LOGO_HEIGHT + 1;
@@ -50,7 +54,41 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
             i++;
 
             for(column = 0; column < 8; column++) {
-                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                if(moves != NULL) {
+                    //Loops through possible moves
+                    for(point = 0; point < moves->size; point++) {
+                        move_xy = moves->list[point];
+
+                        //Checks if array equals current square
+                        if(!(row == move_xy[1] && column == move_xy[0])) {
+                            //Prints default color
+                            if(point == (moves->size - 1)) {
+                                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                            }
+                            continue;
+                        }
+
+                        //Prints possible moves
+                        if((*board)[row][column].name == ' ') {
+                            wprintw(board_win, "| ");
+                            turn_on_color(board_win, theme->color_black);
+                            wprintw(board_win, "○ ");
+                            turn_off_color(board_win, theme->color_black);
+                            break;
+
+                        //Highlights capturable pieces
+                        } else if((*board)[row][column].name != ' ') {
+                            wprintw(board_win, "| ");
+                            turn_on_color(board_win, theme->color_black);
+                            wprintw(board_win, "%lc ", show_piece(board, row, column, config->style));
+                            turn_off_color(board_win, theme->color_black);
+                            break;
+                        }
+                    }
+
+                } else {
+                    wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                }
             }
             waddch(board_win, '|');
 
@@ -73,7 +111,41 @@ void show_board(Board* board, GameConfig* config, GameTheme* theme) {
             i++;
 
             for(column = 7; column >= 0; column--) {
-                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                if(moves != NULL) {
+                    //Loops through possible moves
+                    for(point = 0; point < moves->size; point++) {
+                        move_xy = moves->list[point];
+
+                        //Checks if array equals current square
+                        if(!(row == move_xy[1] && column == move_xy[0])) {
+                            //Prints default color
+                            if(point == (moves->size - 1)) {
+                                wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                            }
+                            continue;
+                        }
+
+                        //Prints possible moves
+                        if((*board)[row][column].name == ' ') {
+                            wprintw(board_win, "| ");
+                            turn_on_color(board_win, theme->color_black);
+                            wprintw(board_win, "○ ");
+                            turn_off_color(board_win, theme->color_black);
+                            break;
+
+                        //Highlights capturable pieces
+                        } else if((*board)[row][column].name != ' ') {
+                            wprintw(board_win, "| ");
+                            turn_on_color(board_win, theme->color_black);
+                            wprintw(board_win, "%lc ", show_piece(board, row, column, config->style));
+                            turn_off_color(board_win, theme->color_black);
+                            break;
+                        }
+                    }
+
+                } else {
+                    wprintw(board_win, "| %lc ", show_piece(board, row, column, config->style));
+                }
             }
             waddch(board_win, '|');
 

@@ -74,16 +74,19 @@ int main(void) {
     clear();
     refresh();
 
-    show_board(board_ptr, config_ptr, theme_ptr);
+    show_board(board_ptr, config_ptr, theme_ptr, NULL);
 
     int* xy1 = get_move(NULL, config_ptr->side);
-    int* xy2 = get_move(NULL, config_ptr->side);
     
     Moves* moves = legal_moves(xy1, board_ptr, NULL);
 
+    show_board(board_ptr, config_ptr, theme_ptr, moves);
+
+    int* xy2 = get_move(NULL, config_ptr->side);
+
     make_move(board_ptr, xy1, xy2, moves);
     
-    show_board(board_ptr, config_ptr, theme_ptr);
+    show_board(board_ptr, config_ptr, theme_ptr, NULL);
 
     get_move(NULL, config_ptr->side);
 
